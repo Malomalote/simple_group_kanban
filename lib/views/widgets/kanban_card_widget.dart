@@ -13,7 +13,10 @@ class KanbanCardWidget extends StatelessWidget {
       height: 150,
       decoration: BoxDecoration(
           color: kanbanCard.cardColor,
-          borderRadius: BorderRadius.all(Radius.circular(12))),
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+          boxShadow: [
+            BoxShadow(color: Colors.grey, offset: Offset(2, 2), blurRadius: 4)
+          ]),
       child: Padding(
           padding: EdgeInsets.all(10),
           child: Text(

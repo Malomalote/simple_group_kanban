@@ -62,7 +62,7 @@ class HomeView extends StatelessWidget {
   }
 }
 
-class _Columna extends StatelessWidget {
+class _Columna extends StatefulWidget {
   CardState cardState;
   _Columna({
     Key? key,
@@ -70,27 +70,87 @@ class _Columna extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<_Columna> createState() => _ColumnaState();
+}
+
+class _ColumnaState extends State<_Columna> {
+  @override
   Widget build(BuildContext context) {
     List<KanbanCard> cardsList =
-        CardsQueries.getKanbanCardsFromStatus(cardState.stateId, true);
+        CardsQueries.getKanbanCardsFromStatus(widget.cardState.stateId, true);
     return Container(
       width: 300,
-      child: ListView.builder(
-          primary: false,
-          // scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          // physics: NeverScrollableScrollPhysics(),
-          itemCount: cardsList.length,
-          itemBuilder: (_, index) {
-            return Container(
-              // padding: const EdgeInsets.all(8.0),
-              margin: EdgeInsets.all(8),
-              child: KanbanCardWidget(kanbanCard: cardsList[index]),
-            );
-            //  ListTile(
-            //   title: Text(cardsList[index].cardId),
-            // );
-          }),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Spacer(),
+              FittedBox(
+                fit: BoxFit.fill,
+                child: Text(
+                  widget.cardState.name,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Spacer(),
+              IconButton(
+                  onPressed: () {
+                    //TODO: Falta mostrar una ficha con los datos de la categoría
+                    print(widget.cardState.description);
+                  },
+                  icon: Icon(Icons.more_outlined, size: 15))
+            ],
+          ),
+          Expanded(
+            child: ReorderableListView(
+              buildDefaultDragHandles: false, //para quitar icono de movimiento
+              primary: false,
+              shrinkWrap: true,
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              children: <Widget>[
+                for (int index = 0; index < cardsList.length; index++)
+                  ReorderableDragStartListener(
+                    index: index,
+                    key: Key('$index'),
+                    child: Container(
+                      margin: EdgeInsets.all(4),
+                      // padding: EdgeInsets.all(8),
+                      child: KanbanCardWidget(kanbanCard: cardsList[index]),
+                    ),
+                  ),
+                // ListTile(
+                //   key: Key('$index'),
+                //   tileColor: cardsList[index].isOdd ? oddItemColor : evenItemColor,
+                //   title: Text('Item ${cardsList[index]}'),
+                // ),
+              ],
+              onReorder: (int oldIndex, int newIndex) {
+                setState(() {
+                  if (oldIndex < newIndex) {
+                    newIndex -= 1;
+                  }
+                  final KanbanCard item = cardsList.removeAt(oldIndex);
+                  cardsList.insert(newIndex, item);
+                  //TODO: Falta esto hay que sacarlo de aquí no puede ir en el widget
+                });
+              },
+            ),
+
+            // child: ListView.builder(
+            //     primary: false,
+            //     shrinkWrap: true,
+            //     // physics: NeverScrollableScrollPhysics(),
+            //     itemCount: cardsList.length,
+            //     itemBuilder: (_, index) {
+            //       return Container(
+            //         margin: EdgeInsets.all(8),
+            //         child: KanbanCardWidget(kanbanCard: cardsList[index]),
+            //       );
+            //     }),
+          ),
+        ],
+      ),
     );
   }
 }

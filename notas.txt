@@ -1,0 +1,10 @@
+
+
+Para nombre del estado o categoría recomendar que no sea mayor de 25.
+
+para obtener el usuario del sistema 
+
+ Platform.environment['USERNAME']
+
+
+ 
