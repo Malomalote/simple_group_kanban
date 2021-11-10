@@ -45,16 +45,6 @@ class CardStateQueries {
     List<CardState> cardState = [];
 
     for (var r in result) {
-      // String id = r['state_id'];
-      // String name = r['name'];
-      // String description = r['description'] ?? '';
-      // int position = r['position'];
-
-      // cardState.add(CardState(
-      //     stateId: id,
-      //     name: name,
-      //     description: description,
-      //     position: position));
       db.dispose();
       cardState.add(_rowToCardState(r));
     }

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:simple_kanban/db/card_state_queries.dart';
 import 'package:simple_kanban/db/cards_queries.dart';
-import 'package:simple_kanban/db/kanban_database.dart';
+
 import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/utils/data_generator.dart';
@@ -23,31 +23,22 @@ class HomeView extends StatelessWidget {
       body: Container(
         margin: EdgeInsets.all(20),
         width: double.infinity,
-        child:
-
-            // SingleChildScrollView(
-            //   controller: controller,
-
-            //   scrollDirection: Axis.horizontal,
-            //   child: Row(children: [
-            //     ...listCardState.map((e) => _Columna(cardState: e)).toList(),
-            //   ]),
-            ScrollConfiguration(
-                behavior: ScrollConfiguration.of(context).copyWith(
-                  dragDevices: {
-                    PointerDeviceKind.mouse,
-                    PointerDeviceKind.touch,
-                  },
-                ),
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    dragStartBehavior: DragStartBehavior.down,
-                    scrollDirection: Axis.horizontal,
-                    controller: controller,
-                    itemCount: listCardState.length,
-                    itemBuilder: (_, index) {
-                      return _Columna(cardState: listCardState[index]);
-                    })),
+        child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(
+              dragDevices: {
+                PointerDeviceKind.mouse,
+                PointerDeviceKind.touch,
+              },
+            ),
+            child: ListView.builder(
+                shrinkWrap: true,
+                dragStartBehavior: DragStartBehavior.down,
+                scrollDirection: Axis.horizontal,
+                controller: controller,
+                itemCount: listCardState.length,
+                itemBuilder: (_, index) {
+                  return _Columna(cardState: listCardState[index]);
+                })),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -74,10 +65,16 @@ class _Columna extends StatefulWidget {
 }
 
 class _ColumnaState extends State<_Columna> {
+  late List<KanbanCard> cardsList;
+  @override
+  void initState() {
+    super.initState();
+    cardsList =
+        CardsQueries.getKanbanCardsFromStatus(widget.cardState.stateId, true);
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<KanbanCard> cardsList =
-        CardsQueries.getKanbanCardsFromStatus(widget.cardState.stateId, true);
     return Container(
       width: 300,
       child: Column(
@@ -96,7 +93,7 @@ class _ColumnaState extends State<_Columna> {
               Spacer(),
               IconButton(
                   onPressed: () {
-                    //TODO: Falta mostrar una ficha con los datos de la categoría
+                    //TODO: show cardState CARD
                     print(widget.cardState.description);
                   },
                   icon: Icon(Icons.more_outlined, size: 15))
@@ -104,50 +101,34 @@ class _ColumnaState extends State<_Columna> {
           ),
           Expanded(
             child: ReorderableListView(
-              buildDefaultDragHandles: false, //para quitar icono de movimiento
+              buildDefaultDragHandles: false, //remove reorderable icon
               primary: false,
               shrinkWrap: true,
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              children: <Widget>[
-                for (int index = 0; index < cardsList.length; index++)
-                  ReorderableDragStartListener(
-                    index: index,
-                    key: Key('$index'),
-                    child: Container(
-                      margin: EdgeInsets.all(4),
-                      // padding: EdgeInsets.all(8),
-                      child: KanbanCardWidget(kanbanCard: cardsList[index]),
-                    ),
-                  ),
-                // ListTile(
-                //   key: Key('$index'),
-                //   tileColor: cardsList[index].isOdd ? oddItemColor : evenItemColor,
-                //   title: Text('Item ${cardsList[index]}'),
-                // ),
+
+              children: [
+                ...cardsList
+                    .map((item) => ReorderableDragStartListener(
+                          key: Key('${item.cardId}'),
+                          index: cardsList.indexOf(item),
+                          child: Container(
+                            margin: EdgeInsets.all(10),
+                            child: KanbanCardWidget(
+                              kanbanCard: item,
+                            ),
+                          ),
+                        ))
+                    .toList(),
               ],
               onReorder: (int oldIndex, int newIndex) {
                 setState(() {
                   if (oldIndex < newIndex) {
                     newIndex -= 1;
                   }
-                  final KanbanCard item = cardsList.removeAt(oldIndex);
+                  final item = cardsList.removeAt(oldIndex);
                   cardsList.insert(newIndex, item);
-                  //TODO: Falta esto hay que sacarlo de aquí no puede ir en el widget
                 });
               },
             ),
-
-            // child: ListView.builder(
-            //     primary: false,
-            //     shrinkWrap: true,
-            //     // physics: NeverScrollableScrollPhysics(),
-            //     itemCount: cardsList.length,
-            //     itemBuilder: (_, index) {
-            //       return Container(
-            //         margin: EdgeInsets.all(8),
-            //         child: KanbanCardWidget(kanbanCard: cardsList[index]),
-            //       );
-            //     }),
           ),
         ],
       ),

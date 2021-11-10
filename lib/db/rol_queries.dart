@@ -45,11 +45,6 @@ class RolQueries {
     List<Rol> rol = [];
 
     for (var r in result) {
-      // String id = r['rol_id'];
-      // String name = r['name'];
-      // String description = r['description'] ?? '';
-
-      // rol.add(Rol(rolId: id, name: name, description: description));
       rol.add(_rowToRol(r));
     }
 
@@ -68,12 +63,6 @@ class RolQueries {
     }
 
     result = db.select('select * from rol');
-
-    // String rolId = result.first['rol_id'];
-    // String name = result.first['name'];
-    // String description = result.first['description'] ?? '';
-    // db.dispose();
-    // return Rol(rolId: rolId, name: name, description: description);
 
     db.dispose();
     return _rowToRol(result.first);

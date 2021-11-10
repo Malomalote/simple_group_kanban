@@ -12,17 +12,19 @@ class KanbanCardWidget extends StatelessWidget {
       width: double.infinity,
       height: 150,
       decoration: BoxDecoration(
-          color: kanbanCard.cardColor,
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          boxShadow: [
-            BoxShadow(color: Colors.grey, offset: Offset(2, 2), blurRadius: 4)
-          ]),
+        color: kanbanCard.cardColor,
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        boxShadow: [
+          BoxShadow(color: Colors.grey, offset: Offset(4, 2), blurRadius: 4),
+        ],
+      ),
       child: Padding(
-          padding: EdgeInsets.all(10),
-          child: Text(
-            kanbanCard.cardColor.toString(),
-            style: TextStyle(color: Colors.black),
-          )),
+        padding: EdgeInsets.all(10),
+        child: Text(
+          kanbanCard.cardColor.toString(),
+          style: TextStyle(color: Colors.black),
+        ),
+      ),
     );
   }
 }

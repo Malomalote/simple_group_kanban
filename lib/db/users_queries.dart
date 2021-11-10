@@ -36,13 +36,7 @@ class UsersQueries {
     List<User> user = [];
 
     for (var r in result) {
-      // String id = r['user_id'];
-      // String name = r['name'];
-      // String rolId = r['rol'];
-
-      // Rol rol = RolQueries.getRol(rolId);
-
-      user.add(_rowToUser(r)); //userId: id, name: name, rol: rol));
+      user.add(_rowToUser(r));
     }
 
     db.dispose();

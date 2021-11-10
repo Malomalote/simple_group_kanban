@@ -44,12 +44,7 @@ class TeamsQueries {
     List<Team> team = [];
 
     for (var r in result) {
-      // String id = r['team_id'];
-      // String name = r['name'];
-      // String description = r['description'] ?? '';
-
-      team.add(_rowToTeam(
-          r)); //Team(teamId: id, name: name, description: description));
+      team.add(_rowToTeam(r));
     }
 
     db.dispose();
