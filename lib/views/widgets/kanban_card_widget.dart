@@ -10,7 +10,7 @@ class KanbanCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 150,
+      height: 120,
       decoration: BoxDecoration(
         color: kanbanCard.cardColor,
         borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -20,9 +20,14 @@ class KanbanCardWidget extends StatelessWidget {
       ),
       child: Padding(
         padding: EdgeInsets.all(10),
-        child: Text(
-          kanbanCard.cardColor.toString(),
-          style: TextStyle(color: Colors.black),
+        child: Column(
+          children: [
+            Text(
+              kanbanCard.cardColor.toString(),
+              style: TextStyle(color: Colors.black),
+            ),
+            Text(kanbanCard.position.toString()),
+          ],
         ),
       ),
     );

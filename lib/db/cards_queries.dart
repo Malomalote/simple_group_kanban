@@ -184,7 +184,7 @@ class CardsQueries {
   static void updatePosition(String id, int newPosition) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
     String query =
-        'update kanban_card set postion=$newPosition where card_id="$id"';
+        'update kanban_card set position=$newPosition where card_id="$id"';
     db.execute(query);
     db.dispose();
   }

@@ -106,19 +106,25 @@ class _ColumnaState extends State<_Columna> {
               shrinkWrap: true,
 
               children: [
-                ...cardsList
-                    .map((item) => ReorderableDragStartListener(
-                          key: Key('${item.cardId}'),
-                          index: cardsList.indexOf(item),
-                          child: Container(
-                            margin: EdgeInsets.all(10),
-                            child: KanbanCardWidget(
-                              kanbanCard: item,
-                            ),
-                          ),
-                        ))
-                    .toList(),
+                ...cardsList.map((item) {
+                  // for (var i = 0; i < cardsList.length; i++) {
+                  //   CardsQueries.updatePosition(cardsList[i].cardId, i);
+                  // }
+                  // // CardsQueries.updatePosition(
+                  // //     item.cardId, cardsList.indexOf(item));
+                  return ReorderableDragStartListener(
+                    key: Key('${item.cardId}'),
+                    index: cardsList.indexOf(item),
+                    child: Container(
+                      margin: EdgeInsets.all(6),
+                      child: KanbanCardWidget(
+                        kanbanCard: item,
+                      ),
+                    ),
+                  );
+                }).toList(),
               ],
+
               onReorder: (int oldIndex, int newIndex) {
                 setState(() {
                   if (oldIndex < newIndex) {
@@ -126,6 +132,13 @@ class _ColumnaState extends State<_Columna> {
                   }
                   final item = cardsList.removeAt(oldIndex);
                   cardsList.insert(newIndex, item);
+                  print('$oldIndex  $newIndex');
+                  for (var i = 0; i < cardsList.length; i++) {
+                    //TODO: Falta esto hay que sacarlo de aquí
+                    CardsQueries.updatePosition(cardsList[i].cardId, i);
+                  }
+                  // CardsQueries.updatePosition(
+                  //     item.cardId, cardsList.indexOf(item));
                 });
               },
             ),
