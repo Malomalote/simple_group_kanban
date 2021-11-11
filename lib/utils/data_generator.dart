@@ -57,7 +57,8 @@ class DataGenerator {
   void insertCards(int amount) {
     List<User> userList = UsersQueries.getAllUsers();
     List<Team> teamList = TeamsQueries.getAllTeam();
-    List<CardState> cardStateList = CardStateQueries.getAllCardsState();
+    List<CardState> cardStateList =
+        CardStateQueries.getAllCardsState(ordered: false);
     List<Priority> prioritiesList = PrioritiesQueries.getAllPriorities();
 
     for (int i = 0; i < amount; i++) {

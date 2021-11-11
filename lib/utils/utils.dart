@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum CardDirection { izquierda, derecha }
+
 class Utils {
   static bool isDNI(String dni) {
     if (dni.length != 9) return false;

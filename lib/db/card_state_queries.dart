@@ -38,10 +38,15 @@ class CardStateQueries {
     return -1;
   }
 
-  static List<CardState> getAllCardsState() {
+  static List<CardState> getAllCardsState({required bool ordered}) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
 
-    sqlite.ResultSet result = db.select('select * from card_state');
+    String query = '';
+    (ordered)
+        ? query = 'select * from card_state order by position'
+        : query = 'select * from card_state';
+    sqlite.ResultSet result = db.select(query);
+
     List<CardState> cardState = [];
 
     for (var r in result) {
@@ -66,6 +71,29 @@ class CardStateQueries {
 
     db.dispose();
     return null;
+  }
+
+  static CardState? getCardStateFromPosition(int position) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+
+    sqlite.ResultSet result =
+        db.select('select * from card_state where position=$position');
+
+    for (var r in result) {
+      db.dispose();
+      return _rowToCardState(r);
+    }
+
+    db.dispose();
+    return null;
+  }
+
+  static void setPosition(String id, int newPosition) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query =
+        'update card_state set position=$newPosition where state_id="$id"';
+    db.execute(query);
+    db.dispose();
   }
 
   static CardState _rowToCardState(sqlite.Row r) {

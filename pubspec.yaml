@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   intl: ^0.17.0
   nuid: ^2.1.0
+  provider: ^6.0.1
   sqlite3: ^1.3.1
 
 dev_dependencies:
