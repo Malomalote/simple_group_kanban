@@ -6,25 +6,14 @@ import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/utils/utils.dart';
 
 class BoardProvider with ChangeNotifier {
-  List<CardState> _listCardState = [];
-  List<CardState> listCardState() {
-    _listCardState = CardStateQueries.getAllCardsState(ordered: true);
-    Future.delayed(Duration.zero, () async => notifyListeners());
-    return _listCardState;
-  }
-  // List<CardState> listCardState =
-  //     CardStateQueries.getAllCardsState(ordered: true);
-
-  List<KanbanCard> _selectedListCards = [];
-  List<KanbanCard> getKanbanCardsFromStatus(CardState cardState, bool ordered) {
-    _selectedListCards =
-        CardsQueries.getKanbanCardsFromStatus(cardState.stateId, ordered);
-    Future.delayed(Duration.zero, () async => notifyListeners());
-    return _selectedListCards;
-  }
-
-  static void updateCardPosition(KanbanCard kanbanCard, int newPosition) {
-    CardsQueries.updatePosition(kanbanCard.cardId, newPosition);
+  late List<CardState> listCardState;
+  List<List<KanbanCard>> listKanbanCard = [];
+  void initBoard() {
+    listCardState = CardStateQueries.getAllCardsState(ordered: true);
+    for (var l in listCardState) {
+      listKanbanCard
+          .add(CardsQueries.getKanbanCardsFromStatus(l.stateId, true));
+    }
   }
 
   void moveState(
@@ -35,7 +24,13 @@ class BoardProvider with ChangeNotifier {
           CardStateQueries.getCardStateFromPosition(position + 1);
       if (neighbour != null) {
         CardStateQueries.setPosition(cardState.stateId, position + 1);
+
         CardStateQueries.setPosition(neighbour.stateId, position);
+
+        final state = listCardState.removeAt(position);
+        listCardState.insert(position + 1, state);
+        final item = listKanbanCard.removeAt(position);
+        listKanbanCard.insert(position + 1, item);
       }
     } else {
       int position = cardState.position;
@@ -44,8 +39,16 @@ class BoardProvider with ChangeNotifier {
       if (neighbour != null) {
         CardStateQueries.setPosition(cardState.stateId, position - 1);
         CardStateQueries.setPosition(neighbour.stateId, position);
+        final state = listCardState.removeAt(position);
+        listCardState.insert(position - 1, state);
+        final item = listKanbanCard.removeAt(position);
+        listKanbanCard.insert(position - 1, item);
       }
     }
     notifyListeners();
+  }
+
+  void updateCardPosition(KanbanCard kanbanCard, int newPosition) {
+    CardsQueries.updatePosition(kanbanCard.cardId, newPosition);
   }
 }

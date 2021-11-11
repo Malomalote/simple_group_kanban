@@ -5,7 +5,7 @@
 
 # simple_kanban
 
-A implementation of kanban for a small group in a corporative net.
+A implementation of kanban for local use.
 
 ## Getting Started
 

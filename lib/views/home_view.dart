@@ -16,6 +16,8 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final boardProvider = Provider.of<BoardProvider>(context);
+    boardProvider.initBoard();
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       body: _Body(),
@@ -40,8 +42,9 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final boardProvider = Provider.of<BoardProvider>(context);
-    List<CardState> listCardState = boardProvider.listCardState();
+    final boardProvider = Provider.of<BoardProvider>(context, listen: false);
+    //List<CardState> listCardState = boardProvider.listCardState();
+    List<CardState> listCardState = boardProvider.listCardState;
     ScrollController controller = ScrollController();
     return Container(
       margin: EdgeInsets.all(20),
@@ -83,19 +86,11 @@ class _ColumnaState extends State<_Columna> {
 
   @override
   Widget build(BuildContext context) {
+    print('aqui');
     final boardProvider = Provider.of<BoardProvider>(context);
-    @override
-    void initState() {
-      super.initState();
-      // // cardsList =
-      // //     CardsQueries.getKanbanCardsFromStatus(widget.cardState.stateId, true);
-      cardsList =
-          boardProvider.getKanbanCardsFromStatus(widget.cardState, true);
-    }
 
     setState(() {
-      cardsList =
-          boardProvider.getKanbanCardsFromStatus(widget.cardState, true);
+      cardsList = boardProvider.listKanbanCard[widget.cardState.position];
     });
 
     return (cardsList.isEmpty)
@@ -109,14 +104,18 @@ class _ColumnaState extends State<_Columna> {
                   children: [
                     SizedBox(width: 16),
                     if (widget.cardState.position != 0)
-                      GestureDetector(
-                        child: Icon(Icons.arrow_back, size: 16),
-                        onTap: () {
+                      // MouseRegion(
+                      //   cursor: SystemMouseCursors.move,
+                      // child:
+                      IconButton(
+                        icon: Icon(Icons.arrow_back, size: 16),
+                        onPressed: () {
                           boardProvider.moveState(
                               cardState: widget.cardState,
                               direction: CardDirection.izquierda);
-                          cardsList = boardProvider.getKanbanCardsFromStatus(
-                              widget.cardState, true);
+                          cardsList = boardProvider
+                              .listKanbanCard[widget.cardState.position];
+
                           setState(() {});
                         },
                       ),
@@ -137,14 +136,15 @@ class _ColumnaState extends State<_Columna> {
                         },
                         icon: Icon(Icons.more_outlined, size: 15)),
                     if (widget.cardState.position != widget.maxStates - 1)
-                      GestureDetector(
-                        child: Icon(Icons.arrow_forward, size: 16),
-                        onTap: () {
+                      IconButton(
+                        icon: Icon(Icons.arrow_forward, size: 16),
+                        onPressed: () {
                           boardProvider.moveState(
                               cardState: widget.cardState,
                               direction: CardDirection.derecha);
-                          cardsList = boardProvider.getKanbanCardsFromStatus(
-                              widget.cardState, true);
+                          cardsList = boardProvider
+                              .listKanbanCard[widget.cardState.position];
+
                           setState(() {});
                         },
                       ),
@@ -180,10 +180,9 @@ class _ColumnaState extends State<_Columna> {
                         }
                         final item = cardsList.removeAt(oldIndex);
                         cardsList.insert(newIndex, item);
-                        print('$oldIndex  $newIndex');
 
                         for (var i = 0; i < cardsList.length; i++) {
-                          BoardProvider.updateCardPosition(cardsList[i], i);
+                          boardProvider.updateCardPosition(cardsList[i], i);
                         }
                       });
                     },

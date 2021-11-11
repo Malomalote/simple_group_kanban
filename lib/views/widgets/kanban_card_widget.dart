@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
+import 'package:simple_kanban/views/widgets/kanban_card_dialog.dart';
 
 class KanbanCardWidget extends StatelessWidget {
   final KanbanCard kanbanCard;
@@ -9,29 +10,37 @@ class KanbanCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      //  height: 120,
-      decoration: BoxDecoration(
-        color: kanbanCard.cardColor,
-        // color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(12)),
-        boxShadow: [
-          BoxShadow(color: Colors.grey, offset: Offset(4, 2), blurRadius: 4),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        child: Column(
-          children: [
-            _TopBar(kanbanCard: kanbanCard),
-            SizedBox(height: 8),
-            Text(kanbanCard.title,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                style: TextStyle(color: Colors.black)),
-            _BottonBar(kanbanCard: kanbanCard)
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) =>
+                KanbanCardDialog(kanbanCard: kanbanCard));
+      },
+      child: Container(
+        width: double.infinity,
+        //  height: 120,
+        decoration: BoxDecoration(
+          color: kanbanCard.cardColor,
+          // color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+          boxShadow: [
+            BoxShadow(color: Colors.grey, offset: Offset(4, 2), blurRadius: 4),
           ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          child: Column(
+            children: [
+              _TopBar(kanbanCard: kanbanCard),
+              SizedBox(height: 8),
+              Text(kanbanCard.title,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  style: TextStyle(color: Colors.black)),
+              _BottonBar(kanbanCard: kanbanCard)
+            ],
+          ),
         ),
       ),
     );
