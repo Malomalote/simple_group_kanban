@@ -29,6 +29,12 @@ class DataGenerator {
     for (var card in listCards) {
       CardsQueries.updateColor(card.cardId, getColor());
     }
+    // for (var card in listCards) {
+    //   int ale = rnd.nextInt(100);
+    //   // CardsQueries.updateColor(
+    //   //     card.cardId, Color.fromARGB(255, 155 + ale, 155 + ale, 155 + ale));
+    //   CardsQueries.updateColor(card.cardId, Colors.grey.shade50);
+    // }
   }
 
   void fillKanbanDb() {
@@ -151,7 +157,7 @@ class DataGenerator {
     PrioritiesQueries.insertPriority(priority);
     id = nuid.next();
     name = 'Media';
-    color = Colors.red;
+    color = Colors.orange;
     priority = Priority(priorityId: id, name: name, priorityColor: color);
     PrioritiesQueries.insertPriority(priority);
     id = nuid.next();

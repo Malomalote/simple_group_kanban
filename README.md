@@ -1,6 +1,11 @@
+# WORKING ......
+
+
+
+
 # simple_kanban
 
-A new Flutter project.
+A implementation of kanban for a small group in a corporative net.
 
 ## Getting Started
 
