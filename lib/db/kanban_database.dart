@@ -71,7 +71,7 @@ class KanbanDatabase {
         "title"	TEXT NOT NULL,
         "description"	TEXT,
         "expiration_date"	TEXT,
-        "comments"	TEXT,
+        "private"	TEXT NOT NULL,
         "card_color"	INTEGER NOT NULL,
         "position" INTEGER NOT NULL,
         FOREIGN KEY("user_asigned") REFERENCES "user"("user_id"),

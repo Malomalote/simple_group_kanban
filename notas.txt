@@ -6,5 +6,5 @@ para obtener el usuario del sistema
 
  Platform.environment['USERNAME']
 
-
- 
+para el menu lateral
+ https://pub.dev/packages/collapsible_sidebar

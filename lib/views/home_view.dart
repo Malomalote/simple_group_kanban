@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_kanban/controllers/board_provider.dart';
 
@@ -21,16 +22,17 @@ class HomeView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       body: _Body(),
-      // floatingActionButton: FloatingActionButton(
-      //   //TODO: Falta borrar este botón
-      //   onPressed: () {
-      //     DataGenerator generator = DataGenerator();
-      //     generator.tryColors();
-      //     final username = Platform.environment['USERNAME'];
-      //     print(username);
-      //   },
-      //   child: const Icon(Icons.add),
-      // ),
+      floatingActionButton: FloatingActionButton(
+        //TODO: Falta borrar este botón
+        onPressed: () {
+          DataGenerator generator = DataGenerator();
+          generator.tryColors();
+          generator.fillKanbanDb();
+          final username = Platform.environment['USERNAME'];
+          print(username);
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
@@ -56,17 +58,54 @@ class _Body extends StatelessWidget {
               PointerDeviceKind.touch,
             },
           ),
-          child: ListView.builder(
-              shrinkWrap: true,
-              dragStartBehavior: DragStartBehavior.down,
-              scrollDirection: Axis.horizontal,
-              controller: controller,
-              itemCount: listCardState.length,
-              itemBuilder: (_, index) {
-                return _Columna(
-                    cardState: listCardState[index],
-                    maxStates: listCardState.length);
-              })),
+          child: ListView(
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            controller: controller,
+            children: [
+              ...listCardState
+                  .map((e) => _Columna(
+                        cardState: e,
+                        maxStates: listCardState.length,
+                      ))
+                  .toList(),
+              Column(
+                children: [
+                  SizedBox(height: 5),
+                  InkWell(
+                    onTap: () {},
+                    child: Container(
+                      height: 30,
+                      child: Text(
+                        'Añadir nueva lista',
+                        style:
+                            TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  Expanded(child: Container())
+                ],
+              )
+
+              // Align(
+              //   alignment: Alignment.topCenter,
+              //   child: IconButton(onPressed: (){}, icon: Icon(Icons.plus_one)))
+            ],
+          )
+
+          // child: ListView.builder(
+          //   shrinkWrap: true,
+          //   // dragStartBehavior: DragStartBehavior.down,
+          //   scrollDirection: Axis.horizontal,
+          //   controller: controller,
+          //   itemCount: listCardState.length,
+          //   itemBuilder: (_, index) {
+          //     return _Columna(
+          //         cardState: listCardState[index],
+          //         maxStates: listCardState.length);
+          //   },
+          // ),
+          ),
     );
   }
 }

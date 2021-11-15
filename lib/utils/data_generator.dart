@@ -75,8 +75,8 @@ class DataGenerator {
       (rnd.nextInt(10) > 6) ? description = getQuijote(20) : description = '';
       DateTime? expirationDate;
       if (rnd.nextInt(10) > 7) expirationDate = generateRandomDate(2019, 2021);
-      String? comments;
-      (rnd.nextInt(10) > 8) ? comments = getQuijote(30) : comments = '';
+      String? private;
+      (rnd.nextInt(10) > 5) ? private = 'true' : private = 'false';
       Color cardColor = getColor();
       //para pruebas iniciales está bien, pero igual hay que cambiarlo
       int position = i;
@@ -97,7 +97,7 @@ class DataGenerator {
           cardColor: cardColor,
           position: position,
           description: description,
-          comments: comments,
+         private: private,
           expirationDate: expirationDate,
           teamAsigned: teamAsigned);
       // if (expirationDate != null) kanbanCard.expirationDate = expirationDate;

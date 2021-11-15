@@ -17,7 +17,7 @@ class KanbanCard {
   final String title;
   final String? description;
   DateTime? expirationDate;
-  final String? comments;
+  final String private;
   final Color cardColor;
   final int position;
   KanbanCard({
@@ -32,7 +32,7 @@ class KanbanCard {
     required this.title,
     this.description,
     this.expirationDate,
-    this.comments,
+    required this.private,
     required this.cardColor,
     required this.position,
   });

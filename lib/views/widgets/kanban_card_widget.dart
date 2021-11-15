@@ -81,10 +81,11 @@ class _BottonBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool comments = false;
+    bool description = false;
 
-    if (kanbanCard.comments != null && kanbanCard.comments!.trim() != '') {
-      comments = true;
+    if (kanbanCard.description != null &&
+        kanbanCard.description!.trim() != '') {
+      description = true;
     }
     String date = '';
     bool expirationDate = false;
@@ -98,7 +99,7 @@ class _BottonBar extends StatelessWidget {
       teamAsigned = true;
       team = kanbanCard.teamAsigned!.name.substring(0, 2);
     }
-    return (comments || expirationDate || teamAsigned)
+    return (description || expirationDate || teamAsigned)
         ? Column(
             children: [
               SizedBox(height: 8),
@@ -108,7 +109,7 @@ class _BottonBar extends StatelessWidget {
                     Icon(Icons.timer, size: 14),
                     Text(date, style: TextStyle(fontSize: 12))
                   ]),
-                if (comments) Icon(Icons.menu, size: 14),
+                if (description) Icon(Icons.menu, size: 14),
                 if (teamAsigned)
                   Container(
                     width: 15,

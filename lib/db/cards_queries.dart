@@ -40,12 +40,12 @@ class CardsQueries {
       final String title = card.title;
       final String description = card.description ?? '';
       final String expirationDate = card.expirationDate?.toString() ?? '';
-      final String comments = card.comments ?? '';
+      final String private = card.private;
       final int cardColor = Utils.colorToInt(card.cardColor);
       final int position = card.position;
 
       final stmt = db.prepare(
-          'INSERT INTO kanban_card (card_id, creator, creation_date, user_asigned,team_asigned, card_state, state_date, priority, title, description,expiration_date, comments, card_color,position) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+          'INSERT INTO kanban_card (card_id, creator, creation_date, user_asigned,team_asigned, card_state, state_date, priority, title, description,expiration_date, private, card_color,position) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
       stmt.execute([
         cardId,
         creator,
@@ -58,7 +58,7 @@ class CardsQueries {
         title,
         description,
         expirationDate,
-        comments,
+        private,
         cardColor,
         position
       ]);
@@ -153,7 +153,7 @@ class CardsQueries {
     if (r['expiration_date'] != '') {
       expirationDate = DateTime.parse(r['expiration_date']);
     }
-    String? comments = r['comments'];
+    String private = r['private'];
     Color cardColor = Color(r['card_color']);
     int position = r['position'];
     return KanbanCard(
@@ -168,7 +168,7 @@ class CardsQueries {
         title: title,
         description: description,
         expirationDate: expirationDate,
-        comments: comments,
+        private: private,
         cardColor: cardColor,
         position: position);
   }

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:simple_kanban/db/card_state_queries.dart';
 import 'package:simple_kanban/db/cards_queries.dart';
+import 'package:simple_kanban/db/priorities_queries.dart';
 import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
+import 'package:simple_kanban/models/priority.dart';
 import 'package:simple_kanban/utils/utils.dart';
 
 class BoardProvider with ChangeNotifier {
   late List<CardState> listCardState;
+  late List<Priority> listPriorities;
   List<List<KanbanCard>> listKanbanCard = [];
   void initBoard() {
     listCardState = CardStateQueries.getAllCardsState(ordered: true);
@@ -14,6 +17,7 @@ class BoardProvider with ChangeNotifier {
       listKanbanCard
           .add(CardsQueries.getKanbanCardsFromStatus(l.stateId, true));
     }
+    listPriorities=PrioritiesQueries.getAllPriorities();
   }
 
   void moveState(
@@ -45,10 +49,15 @@ class BoardProvider with ChangeNotifier {
         listKanbanCard.insert(position - 1, item);
       }
     }
+    
     notifyListeners();
   }
 
   void updateCardPosition(KanbanCard kanbanCard, int newPosition) {
     CardsQueries.updatePosition(kanbanCard.cardId, newPosition);
   }
+
+  // void updateCardState(KanbanCard kanbanCard,String newState){
+  //   CardsQueries.updateState()
+  // }
 }

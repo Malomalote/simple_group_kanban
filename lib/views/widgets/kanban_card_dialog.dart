@@ -1,9 +1,11 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_kanban/controllers/board_provider.dart';
 
 import 'package:simple_kanban/models/kanban_card.dart';
+import 'package:simple_kanban/utils/utils.dart';
 
 class KanbanCardDialog extends StatelessWidget {
   final KanbanCard kanbanCard;
@@ -50,25 +52,30 @@ class _KanbanForm extends StatefulWidget {
 
 class _KanbanFormState extends State<_KanbanForm> {
   TextEditingController titleController = TextEditingController();
-  TextEditingController commentsController = TextEditingController();
-
+  TextEditingController descriptionController = TextEditingController();
+  String stateDropdownValue = '';
+  String priorityDropdownValue = '';
+  bool private = false;
   @override
   void initState() {
-    titleController.text = widget.kanbanCard.title;
-    commentsController.text = widget.kanbanCard.comments ?? '';
     super.initState();
+    titleController.text = widget.kanbanCard.title;
+    descriptionController.text = widget.kanbanCard.description ?? '';
+    stateDropdownValue = widget.kanbanCard.cardState.name;
+    priorityDropdownValue = widget.kanbanCard.priority.name;
+    if (widget.kanbanCard.private == true) private = true;
   }
 
   @override
   void dispose() {
     titleController.dispose();
-    commentsController.dispose();
+    descriptionController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final boardProvider=Provider.of<BoardProvider>(context,listen: false);
+    final boardProvider = Provider.of<BoardProvider>(context, listen: false);
     final _formKey = GlobalKey<FormState>();
     return SingleChildScrollView(
       child: Container(
@@ -95,12 +102,134 @@ class _KanbanFormState extends State<_KanbanForm> {
                 // maxLength: 100,
                 maxLines: null,
                 style: TextStyle(color: Colors.black, fontSize: 14),
-                controller: commentsController,
+                controller: descriptionController,
                 decoration: _CustomInputDecoration(
                     hintText: 'Comentarios.',
                     labelText: 'Añade comentarios sobre la tarea.',
-                    controller: commentsController),
+                    controller: descriptionController),
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Público',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Switch(
+                      value: private,
+                      onChanged: (newValue) => setState(
+                        () {
+                          private = newValue;
+                        },
+                      ),
+                    ),
+                    Text('Privado',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Lista:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        SizedBox(width: 20),
+                        DropdownButton<String>(
+                          value: stateDropdownValue,
+                          icon: const Icon(Icons.arrow_downward),
+                          iconSize: 20,
+                          elevation: 16,
+                          // style: const TextStyle(color: Colors.deepPurple),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              stateDropdownValue = newValue!;
+                            });
+                          },
+                          items: boardProvider.listCardState
+                              .map((e) => e.name)
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Prioridad:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        SizedBox(width: 20),
+                        DropdownButton<String>(
+                          value: priorityDropdownValue,
+                          icon: const Icon(Icons.arrow_downward),
+                          iconSize: 20,
+                          elevation: 16,
+                          underline: Container(
+                            height: 1,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              priorityDropdownValue = newValue!;
+                            });
+                          },
+                          items: boardProvider.listPriorities
+                              .map((e) => e.name)
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  //TODO: Falta incluir calendario para elegir la fecha de expiración
+                ],
+              ),
+              SizedBox(height: 15),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                child: Container(
+                    height: 30,
+                    child: ScrollConfiguration(
+                      behavior: ScrollConfiguration.of(context).copyWith(
+                        dragDevices: {
+                          PointerDeviceKind.mouse,
+                          PointerDeviceKind.touch,
+                        },
+                      ),
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          primary: false,
+                          itemCount: kanbanColors.length,
+                          itemBuilder: (_, index) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 2.0),
+                              child: Container(
+                                width: 30,
+                                height: 30,
+                                color: kanbanColors[index],
+                              ),
+                            );
+                          }),
+                    )),
+              ),
+              SizedBox(height: 15),
               Row(
                 children: [
                   Text('Asignada a: ',
@@ -122,6 +251,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                       : Text('ninguno', style: TextStyle(fontSize: 14))
                 ],
               ),
+              SizedBox(height: 15),
               Row(
                 children: [
                   Text('Creador: ',
