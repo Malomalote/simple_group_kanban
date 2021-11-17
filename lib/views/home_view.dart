@@ -1,8 +1,6 @@
-import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import 'package:simple_kanban/controllers/board_provider.dart';
@@ -22,15 +20,13 @@ class HomeView extends StatelessWidget {
     boardProvider.initBoard();
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
-      body: _Body(),
+      body: const _Body(),
       floatingActionButton: FloatingActionButton(
         //TODO: Falta borrar este botón
         onPressed: () {
           DataGenerator generator = DataGenerator();
           generator.tryColors();
           generator.fillKanbanDb();
-          final username = Platform.environment['USERNAME'];
-          print(username);
         },
         child: const Icon(Icons.add),
       ),
@@ -50,7 +46,7 @@ class _Body extends StatelessWidget {
     List<CardState> listCardState = boardProvider.listCardState;
     ScrollController controller = ScrollController();
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
       width: double.infinity,
       child: ScrollConfiguration(
           behavior: ScrollConfiguration.of(context).copyWith(
@@ -72,10 +68,10 @@ class _Body extends StatelessWidget {
                   .toList(),
               Column(
                 children: [
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   InkWell(
                     onTap: () {},
-                    child: Container(
+                    child: const SizedBox(
                       height: 30,
                       child: Text(
                         'Añadir nueva lista',
@@ -94,10 +90,14 @@ class _Body extends StatelessWidget {
 }
 
 class _Columna extends StatefulWidget {
-  CardState cardState;
-  int maxStates;
-  _Columna({Key? key, required this.cardState, required this.maxStates})
-      : super(key: key);
+ final  CardState cardState;
+ final  int maxStates;
+  const _Columna({
+    Key? key,
+    required this.cardState,
+    required this.maxStates,
+  }) : super(key: key);
+
 
   @override
   State<_Columna> createState() => _ColumnaState();
@@ -108,7 +108,6 @@ class _ColumnaState extends State<_Columna> {
 
   @override
   Widget build(BuildContext context) {
-    print('aqui');
     final boardProvider = Provider.of<BoardProvider>(context);
 
     setState(() {
@@ -116,21 +115,21 @@ class _ColumnaState extends State<_Columna> {
     });
 
     return (cardsList.isEmpty)
-        ? CircularProgressIndicator()
-        : Container(
+        ? const CircularProgressIndicator()
+        : SizedBox(
             width: 300,
             child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     if (widget.cardState.position != 0)
                       // MouseRegion(
                       //   cursor: SystemMouseCursors.move,
                       // child:
                       IconButton(
-                        icon: Icon(Icons.arrow_back, size: 16),
+                        icon: const Icon(Icons.arrow_back, size: 16),
                         onPressed: () {
                           boardProvider.moveState(
                               cardState: widget.cardState,
@@ -141,25 +140,25 @@ class _ColumnaState extends State<_Columna> {
                           setState(() {});
                         },
                       ),
-                    Spacer(),
+                    const Spacer(),
                     FittedBox(
                       fit: BoxFit.fill,
                       child: Text(
                         widget.cardState.name,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     IconButton(
                         onPressed: () {
                           //TODO: show cardState CARD
-                          print(widget.cardState.description);
+                        
                         },
-                        icon: Icon(Icons.more_outlined, size: 15)),
+                        icon: const Icon(Icons.more_outlined, size: 15)),
                     if (widget.cardState.position != widget.maxStates - 1)
                       IconButton(
-                        icon: Icon(Icons.arrow_forward, size: 16),
+                        icon: const Icon(Icons.arrow_forward, size: 16),
                         onPressed: () {
                           boardProvider.moveState(
                               cardState: widget.cardState,
@@ -170,7 +169,7 @@ class _ColumnaState extends State<_Columna> {
                           setState(() {});
                         },
                       ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                   ],
                 ),
                 Expanded(
@@ -187,10 +186,10 @@ class _ColumnaState extends State<_Columna> {
                           children: [
                             ...cardsList.map((item) {
                               return ReorderableDragStartListener(
-                                key: Key('${item.cardId}'),
+                                key: Key(item.cardId),
                                 index: cardsList.indexOf(item),
                                 child: Container(
-                                  margin: EdgeInsets.symmetric(
+                                  margin: const EdgeInsets.symmetric(
                                       horizontal: 15, vertical: 4),
                                   child: KanbanCardWidget(
                                     kanbanCard: item,
@@ -223,7 +222,7 @@ class _ColumnaState extends State<_Columna> {
                 KanbanCardDialog(cardStateDefault: widget.cardState,));
                        
                             },
-                            child: Text(
+                            child: const Text(
                               '+',
                               style: TextStyle(fontSize: 35),
                             )),

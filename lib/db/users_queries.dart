@@ -20,8 +20,8 @@ class UsersQueries {
       final String rol = user.rol.rolId;
       final String systemName = user.systemName;
 
-      final stmt =
-          db.prepare('INSERT INTO user (user_id,name,rol,system_name) VALUES(?,?,?,?)');
+      final stmt = db.prepare(
+          'INSERT INTO user (user_id,name,rol,system_name) VALUES(?,?,?,?)');
       stmt.execute([userId, name, rol, systemName]);
       db.dispose();
       return 0;
@@ -58,19 +58,16 @@ class UsersQueries {
     db.dispose();
     return null;
   }
-  static User? getUserFromSystemName(String? systemName){
-    
-    if(systemName==null)  return null;
-    print('aquí ya e¡hemos pasado estamos miarando el usuario');
+
+  static User? getUserFromSystemName(String? systemName) {
+    if (systemName == null) return null;
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
 
     sqlite.ResultSet result =
         db.select('select * from user where system_name="$systemName"');
 
     for (var r in result) {
-      
       db.dispose();
-      print(r['system_name']);
       return _rowToUser(r);
     }
 

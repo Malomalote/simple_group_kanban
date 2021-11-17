@@ -23,21 +23,21 @@ class KanbanCardWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: kanbanCard.cardColor,
           // color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          boxShadow: [
+          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          boxShadow: const [
             BoxShadow(color: Colors.grey, offset: Offset(4, 2), blurRadius: 4),
           ],
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           child: Column(
             children: [
               _TopBar(kanbanCard: kanbanCard),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(kanbanCard.title,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
-                  style: TextStyle(color: Colors.black)),
+                  style: const TextStyle(color: Colors.black)),
               _BottonBar(kanbanCard: kanbanCard)
             ],
           ),
@@ -60,13 +60,13 @@ class _TopBar extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Icon(Icons.arrow_back, size: 16),
+        const Icon(Icons.arrow_back, size: 16),
         Container(
             alignment: Alignment.topLeft,
             width: 100,
             height: 5,
             color: kanbanCard.priority.priorityColor),
-        Icon(Icons.arrow_forward, size: 16),
+        const Icon(Icons.arrow_forward, size: 16),
       ],
     );
   }
@@ -74,7 +74,7 @@ class _TopBar extends StatelessWidget {
 
 class _BottonBar extends StatelessWidget {
   final KanbanCard kanbanCard;
-  _BottonBar({
+  const _BottonBar({
     Key? key,
     required this.kanbanCard,
   }) : super(key: key);
@@ -102,14 +102,14 @@ class _BottonBar extends StatelessWidget {
     return (description || expirationDate || teamAsigned)
         ? Column(
             children: [
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
                 if (date != '')
                   Row(children: [
-                    Icon(Icons.timer, size: 14),
-                    Text(date, style: TextStyle(fontSize: 12))
+                    const Icon(Icons.timer, size: 14),
+                    Text(date, style: const TextStyle(fontSize: 12))
                   ]),
-                if (description) Icon(Icons.menu, size: 14),
+                if (description) const Icon(Icons.menu, size: 14),
                 if (teamAsigned)
                   Container(
                     width: 15,
@@ -118,7 +118,7 @@ class _BottonBar extends StatelessWidget {
                     child: Center(
                         child: Text(team,
                             style:
-                                TextStyle(fontSize: 10, color: Colors.white))),
+                                const TextStyle(fontSize: 10, color: Colors.white))),
                   )
               ]),
             ],
