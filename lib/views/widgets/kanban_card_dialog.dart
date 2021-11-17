@@ -1,17 +1,22 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_kanban/controllers/board_provider.dart';
+import 'package:simple_kanban/models/card_state.dart';
 
 import 'package:simple_kanban/models/kanban_card.dart';
+import 'package:simple_kanban/models/priority.dart';
 import 'package:simple_kanban/utils/utils.dart';
 
 class KanbanCardDialog extends StatelessWidget {
-  final KanbanCard kanbanCard;
+  final KanbanCard? kanbanCard;
+  final CardState? cardStateDefault;
   KanbanCardDialog({
     Key? key,
-    required this.kanbanCard,
+    this.kanbanCard,
+    this.cardStateDefault,
   }) : super(key: key);
 
   @override
@@ -20,7 +25,7 @@ class KanbanCardDialog extends StatelessWidget {
       contentPadding: EdgeInsets.all(8),
       buttonPadding: EdgeInsets.all(1),
       // backgroundColor: kanbanCard.cardColor,
-      content: _KanbanForm(kanbanCard: kanbanCard),
+      content: _KanbanForm(kanbanCard: kanbanCard, cardState: cardStateDefault),
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -40,10 +45,12 @@ class KanbanCardDialog extends StatelessWidget {
 }
 
 class _KanbanForm extends StatefulWidget {
-  final KanbanCard kanbanCard;
+  final KanbanCard? kanbanCard;
+  final CardState? cardState;
   const _KanbanForm({
     Key? key,
-    required this.kanbanCard,
+    this.kanbanCard,
+    this.cardState,
   }) : super(key: key);
 
   @override
@@ -55,15 +62,24 @@ class _KanbanFormState extends State<_KanbanForm> {
   TextEditingController descriptionController = TextEditingController();
   String stateDropdownValue = '';
   String priorityDropdownValue = '';
-  bool private = false;
+   String asignedUser='';
+  bool private = true;
+  bool newTask = true;
+  CardState? cardState;
   @override
   void initState() {
     super.initState();
-    titleController.text = widget.kanbanCard.title;
-    descriptionController.text = widget.kanbanCard.description ?? '';
-    stateDropdownValue = widget.kanbanCard.cardState.name;
-    priorityDropdownValue = widget.kanbanCard.priority.name;
-    if (widget.kanbanCard.private == true) private = true;
+    if (widget.kanbanCard != null) {
+      titleController.text = widget.kanbanCard!.title;
+      descriptionController.text = widget.kanbanCard!.description ?? '';
+      stateDropdownValue = widget.kanbanCard!.cardState.name;
+      priorityDropdownValue = widget.kanbanCard!.priority.name;
+      newTask = false;
+      if (widget.kanbanCard!.private == true) private = true;
+      asignedUser = widget.kanbanCard!.userAsigned.name;
+    } else {
+      stateDropdownValue=widget.cardState!.name;
+    }
   }
 
   @override
@@ -73,13 +89,40 @@ class _KanbanFormState extends State<_KanbanForm> {
     super.dispose();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final boardProvider = Provider.of<BoardProvider>(context, listen: false);
     final _formKey = GlobalKey<FormState>();
+    // if(widget.kanbanCard==null){
+    //   asignedUser=boardProvider.currentUser!.name;
+    // }
+    
+      List<DropdownMenuItem<String>> buildStateDropdown(){
+
+
+
+
+    List<DropdownMenuItem<String>> toReturn =[];
+    // toReturn.add(DropdownMenuItem<String>(
+    //   child: 
+    //   Text('')));
+    toReturn.addAll(boardProvider.listCardState
+                              .map((e) => e.name)
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList());
+
+                          return toReturn;
+  }
     return SingleChildScrollView(
       child: Container(
         width: 600,
+     
         child: Form(
           key: _formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -133,7 +176,10 @@ class _KanbanFormState extends State<_KanbanForm> {
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         SizedBox(width: 20),
                         DropdownButton<String>(
-                          value: stateDropdownValue,
+
+                          value: (stateDropdownValue == '')
+                              ? null
+                              : stateDropdownValue,
                           icon: const Icon(Icons.arrow_downward),
                           iconSize: 20,
                           elevation: 16,
@@ -147,14 +193,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                               stateDropdownValue = newValue!;
                             });
                           },
-                          items: boardProvider.listCardState
-                              .map((e) => e.name)
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
+                          items: buildStateDropdown(),
                         ),
                       ],
                     ),
@@ -172,7 +211,9 @@ class _KanbanFormState extends State<_KanbanForm> {
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         SizedBox(width: 20),
                         DropdownButton<String>(
-                          value: priorityDropdownValue,
+                          value: (priorityDropdownValue == '')
+                              ? boardProvider.getDefaultPriority()?.name
+                              : priorityDropdownValue,
                           icon: const Icon(Icons.arrow_downward),
                           iconSize: 20,
                           elevation: 16,
@@ -186,11 +227,12 @@ class _KanbanFormState extends State<_KanbanForm> {
                             });
                           },
                           items: boardProvider.listPriorities
-                              .map((e) => e.name)
-                              .map<DropdownMenuItem<String>>((String value) {
+                              .map((e) => e)
+                              .map<DropdownMenuItem<String>>((Priority value) {
                             return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
+                      
+                              value: value.name,
+                              child: Container(color: value.priorityColor.withAlpha(300),child: Text(value.name)),
                             );
                           }).toList(),
                         ),
@@ -231,21 +273,49 @@ class _KanbanFormState extends State<_KanbanForm> {
               ),
               SizedBox(height: 15),
               Row(
-                children: [
+                children: [ 
                   Text('Asignada a: ',
                       style:
                           TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   //TODO: Falta tiene que poder elegirse
-                  Text(widget.kanbanCard.userAsigned.name,
-                      style: TextStyle(fontSize: 14)),
+                  DropdownButton<String>(
+                          value: (asignedUser == '')
+                              ? boardProvider.currentUser!.name
+                              : asignedUser,
+                          icon: const Icon(Icons.arrow_downward),
+                          iconSize: 20,
+                          elevation: 16,
+                          underline: Container(
+                            height: 1,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              asignedUser = newValue!;
+                            });
+                          },
+                          items: boardProvider.listUsers
+                              .map((e) => e.name)
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                      
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                  // Text(
+                  //   (widget.kanbanCard == null) ? boardProvider.currentUser!.name :
+                  //   widget.kanbanCard!.userAsigned.name,
+                  //     style: TextStyle(fontSize: 14)),
                   Spacer(),
                   Text('Equipo asignado: ',
                       style:
                           TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                  (widget.kanbanCard.teamAsigned != null)
+                  (widget.kanbanCard!= null && widget.kanbanCard!.teamAsigned != null)
                       ? Row(children: [
                           //TODO: Falta tiene que poder elegirse
-                          Text(widget.kanbanCard.teamAsigned!.name,
+                          Text(widget.kanbanCard!.teamAsigned!.name,
                               style: TextStyle(fontSize: 14)),
                         ])
                       : Text('ninguno', style: TextStyle(fontSize: 14))
@@ -257,7 +327,9 @@ class _KanbanFormState extends State<_KanbanForm> {
                   Text('Creador: ',
                       style:
                           TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                  Text(widget.kanbanCard.creator.name,
+                  Text(
+                    (widget.kanbanCard!=null)?
+                    widget.kanbanCard!.creator.name: boardProvider.currentUser!.name,
                       style: TextStyle(fontSize: 14)),
                   Spacer(),
                   Text('Fecha inicio: ',
@@ -267,7 +339,10 @@ class _KanbanFormState extends State<_KanbanForm> {
 
                   Text(
                       DateFormat('dd-MM-yyyy')
-                          .format(widget.kanbanCard.creationDate),
+                          .format(
+                           ( widget.kanbanCard !=null) ? widget.kanbanCard!.creationDate   : DateTime.now()
+                            
+                             ),
                       style: TextStyle(fontSize: 14)),
                 ],
               )
@@ -285,7 +360,9 @@ class _KanbanFormState extends State<_KanbanForm> {
     return InputDecoration(
         hintText: hintText,
         suffixIcon: GestureDetector(
-            child: const Icon(Icons.clear_rounded, color: Colors.grey),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: const Icon(Icons.clear_rounded, color: Colors.grey,size: 14)),
             onTap: () {
               controller.text = '';
             }),

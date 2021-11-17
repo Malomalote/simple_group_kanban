@@ -4,12 +4,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:simple_kanban/controllers/board_provider.dart';
 
+import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/utils/data_generator.dart';
 import 'package:simple_kanban/utils/utils.dart';
+import 'package:simple_kanban/views/widgets/kanban_card_dialog.dart';
 import 'package:simple_kanban/views/widgets/kanban_card_widget.dart';
 
 class HomeView extends StatelessWidget {
@@ -78,34 +79,16 @@ class _Body extends StatelessWidget {
                       height: 30,
                       child: Text(
                         'Añadir nueva lista',
-                        style:
-                            TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
                   Expanded(child: Container())
                 ],
               )
-
-              // Align(
-              //   alignment: Alignment.topCenter,
-              //   child: IconButton(onPressed: (){}, icon: Icon(Icons.plus_one)))
             ],
-          )
-
-          // child: ListView.builder(
-          //   shrinkWrap: true,
-          //   // dragStartBehavior: DragStartBehavior.down,
-          //   scrollDirection: Axis.horizontal,
-          //   controller: controller,
-          //   itemCount: listCardState.length,
-          //   itemBuilder: (_, index) {
-          //     return _Columna(
-          //         cardState: listCardState[index],
-          //         maxStates: listCardState.length);
-          //   },
-          // ),
-          ),
+          )),
     );
   }
 }
@@ -191,40 +174,61 @@ class _ColumnaState extends State<_Columna> {
                   ],
                 ),
                 Expanded(
-                  child: ReorderableListView(
-                    buildDefaultDragHandles: false, //remove reorderable icon
+                  child: SingleChildScrollView(
                     primary: false,
-                    shrinkWrap: true,
+                    child: Column(
+                      children: [
+                        ReorderableListView(
+                          buildDefaultDragHandles:
+                              false, //remove reorderable icon
+                          primary: false,
+                          shrinkWrap: true,
 
-                    children: [
-                      ...cardsList.map((item) {
-                        return ReorderableDragStartListener(
-                          key: Key('${item.cardId}'),
-                          index: cardsList.indexOf(item),
-                          child: Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 4),
-                            child: KanbanCardWidget(
-                              kanbanCard: item,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ],
+                          children: [
+                            ...cardsList.map((item) {
+                              return ReorderableDragStartListener(
+                                key: Key('${item.cardId}'),
+                                index: cardsList.indexOf(item),
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 15, vertical: 4),
+                                  child: KanbanCardWidget(
+                                    kanbanCard: item,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ],
 
-                    onReorder: (int oldIndex, int newIndex) {
-                      setState(() {
-                        if (oldIndex < newIndex) {
-                          newIndex -= 1;
-                        }
-                        final item = cardsList.removeAt(oldIndex);
-                        cardsList.insert(newIndex, item);
+                          onReorder: (int oldIndex, int newIndex) {
+                            setState(() {
+                              if (oldIndex < newIndex) {
+                                newIndex -= 1;
+                              }
+                              final item = cardsList.removeAt(oldIndex);
+                              cardsList.insert(newIndex, item);
 
-                        for (var i = 0; i < cardsList.length; i++) {
-                          boardProvider.updateCardPosition(cardsList[i], i);
-                        }
-                      });
-                    },
+                              for (var i = 0; i < cardsList.length; i++) {
+                                boardProvider.updateCardPosition(
+                                    cardsList[i], i);
+                              }
+                            });
+                          },
+                        ),
+                        InkWell(
+                            onTap: () {
+                                 showDialog(
+            context: context,
+            builder: (BuildContext context) =>
+                KanbanCardDialog(cardStateDefault: widget.cardState,));
+                       
+                            },
+                            child: Text(
+                              '+',
+                              style: TextStyle(fontSize: 35),
+                            )),
+                      ],
+                    ),
                   ),
                 ),
               ],

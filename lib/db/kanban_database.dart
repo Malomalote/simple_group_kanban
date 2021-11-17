@@ -44,8 +44,10 @@ class KanbanDatabase {
     db.execute('''
       CREATE TABLE IF NOT EXISTS "user" (
         "user_id"	TEXT NOT NULL UNIQUE,
+        "system_name" TEXT NOT NULL UNIQUE,
         "name"	TEXT NOT NULL,
         "rol"	TEXT NOT NULL,
+        
         FOREIGN KEY("rol") REFERENCES "rol"("rol_id"),
         PRIMARY KEY("user_id")
       )

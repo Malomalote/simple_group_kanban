@@ -125,7 +125,7 @@ class DataGenerator {
       String name = getName() + ' ' + getLastName();
       // String name = '$getName() $getLastName()';
       Rol rol = rolList[rnd.nextInt(rolList.length)];
-      final user = User(userId: id, name: name, rol: rol);
+      final user = User(userId: id, name: name, rol: rol,systemName: '$name$i');
       UsersQueries.insertUser(user);
     }
   }
@@ -150,21 +150,22 @@ class DataGenerator {
   }
 
   void insertPriority() {
-    String id = nuid.next();
-    String name = 'Alta';
-    Color color = Colors.red;
-    Priority priority =
-        Priority(priorityId: id, name: name, priorityColor: color);
+    String     id = nuid.next();
+    String name = 'Baja';
+    Color color = Colors.green;
+    Priority priority = Priority(priorityId: id, name: name, priorityColor: color);
     PrioritiesQueries.insertPriority(priority);
+
     id = nuid.next();
     name = 'Media';
     color = Colors.orange;
     priority = Priority(priorityId: id, name: name, priorityColor: color);
     PrioritiesQueries.insertPriority(priority);
     id = nuid.next();
-    name = 'Baja';
-    color = Colors.green;
-    priority = Priority(priorityId: id, name: name, priorityColor: color);
+    name = 'Alta';
+    color = Colors.red;
+    priority =
+        Priority(priorityId: id, name: name, priorityColor: color);
     PrioritiesQueries.insertPriority(priority);
   }
 

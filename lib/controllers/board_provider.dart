@@ -1,23 +1,33 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:simple_kanban/db/card_state_queries.dart';
 import 'package:simple_kanban/db/cards_queries.dart';
 import 'package:simple_kanban/db/priorities_queries.dart';
+import 'package:simple_kanban/db/users_queries.dart';
 import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/models/priority.dart';
+import 'package:simple_kanban/models/user.dart';
 import 'package:simple_kanban/utils/utils.dart';
 
 class BoardProvider with ChangeNotifier {
+  User? currentUser;
   late List<CardState> listCardState;
   late List<Priority> listPriorities;
+  late List<User> listUsers;
   List<List<KanbanCard>> listKanbanCard = [];
-  void initBoard() {
+  Future<void> initBoard() async {
     listCardState = CardStateQueries.getAllCardsState(ordered: true);
     for (var l in listCardState) {
       listKanbanCard
           .add(CardsQueries.getKanbanCardsFromStatus(l.stateId, true));
     }
     listPriorities=PrioritiesQueries.getAllPriorities();
+    listUsers=UsersQueries.getAllUsers();
+    final username=Platform.environment['USERNAME'];
+    print('$username ------------------------------');
+    currentUser=UsersQueries.getUserFromSystemName(Platform.environment['USERNAME']);
   }
 
   void moveState(
@@ -55,6 +65,10 @@ class BoardProvider with ChangeNotifier {
 
   void updateCardPosition(KanbanCard kanbanCard, int newPosition) {
     CardsQueries.updatePosition(kanbanCard.cardId, newPosition);
+  }
+
+  Priority? getDefaultPriority(){
+   return PrioritiesQueries.getDefaultPriority();
   }
 
   // void updateCardState(KanbanCard kanbanCard,String newState){
