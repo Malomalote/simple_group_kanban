@@ -33,48 +33,20 @@ class BoardProvider with ChangeNotifier {
     currentUser=UsersQueries.getUserFromSystemName(username);
   }
 
-  void moveState(
-      {required CardState cardState, required CardDirection direction}) {
-    if (direction == CardDirection.derecha) {
-      int position = cardState.position;
-      CardState? neighbour =
-          CardStateQueries.getCardStateFromPosition(position + 1);
-      if (neighbour != null) {
-        CardStateQueries.setPosition(cardState.stateId, position + 1);
-
-        CardStateQueries.setPosition(neighbour.stateId, position);
-
-        final state = listCardState.removeAt(position);
-        listCardState.insert(position + 1, state);
-        final item = listKanbanCard.removeAt(position);
-        listKanbanCard.insert(position + 1, item);
-      }
-    } else {
-      int position = cardState.position;
-      CardState? neighbour =
-          CardStateQueries.getCardStateFromPosition(position - 1);
-      if (neighbour != null) {
-        CardStateQueries.setPosition(cardState.stateId, position - 1);
-        CardStateQueries.setPosition(neighbour.stateId, position);
-        final state = listCardState.removeAt(position);
-        listCardState.insert(position - 1, state);
-        final item = listKanbanCard.removeAt(position);
-        listKanbanCard.insert(position - 1, item);
-      }
-    }
-    
-    notifyListeners();
-  }
-
   void updateCardPosition(KanbanCard kanbanCard, int newPosition) {
     CardsQueries.updatePosition(kanbanCard.cardId, newPosition);
+  }
+
+  void updateStatePosition(CardState cardState, int newPosition){
+    CardStateQueries.setPosition(cardState.stateId, newPosition);
   }
 
   Priority? getDefaultPriority(){
    return PrioritiesQueries.getDefaultPriority();
   }
 
-  // void updateCardState(KanbanCard kanbanCard,String newState){
-  //   CardsQueries.updateState()
-  // }
+  void updateCardState(CardState cardState){
+    CardStateQueries.updateCardState(cardState);
+    notifyListeners();
+  }
 }

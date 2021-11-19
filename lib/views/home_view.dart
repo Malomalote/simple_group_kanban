@@ -1,4 +1,3 @@
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +9,7 @@ import 'package:simple_kanban/utils/data_generator.dart';
 import 'package:simple_kanban/utils/utils.dart';
 import 'package:simple_kanban/views/widgets/kanban_card_dialog.dart';
 import 'package:simple_kanban/views/widgets/kanban_card_widget.dart';
+import 'package:simple_kanban/views/widgets/state_card_dialog.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -48,62 +48,40 @@ class _Body extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(20),
       width: double.infinity,
-      child: ScrollConfiguration(
-          behavior: ScrollConfiguration.of(context).copyWith(
-            dragDevices: {
-              PointerDeviceKind.mouse,
-              PointerDeviceKind.touch,
-            },
+      child: Row(
+        children: [
+
+          Expanded(
+            child: ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context).copyWith(
+                dragDevices: {
+                  PointerDeviceKind.mouse,
+                  PointerDeviceKind.touch,
+                },
+              ),
+              child: _SingleColumn(),
+            ),
           ),
-          child: ListView(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            controller: controller,
-            children: [
-              ...listCardState
-                  .map((e) => _Columna(
-                        cardState: e,
-                        maxStates: listCardState.length,
-                      ))
-                  .toList(),
-              Column(
-                children: [
-                  const SizedBox(height: 5),
-                  InkWell(
-                    onTap: () {},
-                    child: const SizedBox(
-                      height: 30,
-                      child: Text(
-                        'Añadir nueva lista',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Expanded(child: Container())
-                ],
-              )
-            ],
-          )),
+        ],
+      ),
     );
   }
 }
 
-class _Columna extends StatefulWidget {
- final  CardState cardState;
- final  int maxStates;
-  const _Columna({
+class _StateColumn extends StatefulWidget {
+  final CardState cardState;
+  final int maxStates;
+  const _StateColumn({
     Key? key,
     required this.cardState,
     required this.maxStates,
   }) : super(key: key);
 
-
   @override
-  State<_Columna> createState() => _ColumnaState();
+  State<_StateColumn> createState() => _StateColumnState();
 }
 
-class _ColumnaState extends State<_Columna> {
+class _StateColumnState extends State<_StateColumn> {
   List<KanbanCard> cardsList = [];
 
   @override
@@ -123,23 +101,7 @@ class _ColumnaState extends State<_Columna> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const SizedBox(width: 16),
-                    if (widget.cardState.position != 0)
-                      // MouseRegion(
-                      //   cursor: SystemMouseCursors.move,
-                      // child:
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back, size: 16),
-                        onPressed: () {
-                          boardProvider.moveState(
-                              cardState: widget.cardState,
-                              direction: CardDirection.izquierda);
-                          cardsList = boardProvider
-                              .listKanbanCard[widget.cardState.position];
 
-                          setState(() {});
-                        },
-                      ),
                     const Spacer(),
                     FittedBox(
                       fit: BoxFit.fill,
@@ -152,24 +114,12 @@ class _ColumnaState extends State<_Columna> {
                     const Spacer(),
                     IconButton(
                         onPressed: () {
-                          //TODO: show cardState CARD
-                        
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) =>
+                                  StateCardDialog(cardState: widget.cardState));
                         },
-                        icon: const Icon(Icons.more_outlined, size: 15)),
-                    if (widget.cardState.position != widget.maxStates - 1)
-                      IconButton(
-                        icon: const Icon(Icons.arrow_forward, size: 16),
-                        onPressed: () {
-                          boardProvider.moveState(
-                              cardState: widget.cardState,
-                              direction: CardDirection.derecha);
-                          cardsList = boardProvider
-                              .listKanbanCard[widget.cardState.position];
-
-                          setState(() {});
-                        },
-                      ),
-                    const SizedBox(width: 16),
+                        icon: const Icon(Icons.menu, size: 20)),
                   ],
                 ),
                 Expanded(
@@ -216,11 +166,12 @@ class _ColumnaState extends State<_Columna> {
                         ),
                         InkWell(
                             onTap: () {
-                                 showDialog(
-            context: context,
-            builder: (BuildContext context) =>
-                KanbanCardDialog(cardStateDefault: widget.cardState,));
-                       
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      KanbanCardDialog(
+                                        cardStateDefault: widget.cardState,
+                                      ));
                             },
                             child: const Text(
                               '+',
@@ -233,5 +184,64 @@ class _ColumnaState extends State<_Columna> {
               ],
             ),
           );
+  }
+}
+
+class _SingleColumn extends StatefulWidget {
+  const _SingleColumn({Key? key}) : super(key: key);
+
+  @override
+  State<_SingleColumn> createState() => _SingleColumnState();
+}
+
+class _SingleColumnState extends State<_SingleColumn> {
+  @override
+  Widget build(BuildContext context) {
+    final boardProvider = Provider.of<BoardProvider>(context);
+    List<CardState> listCardState = boardProvider.listCardState;
+    ScrollController controller = ScrollController();
+    return Row(
+      children: [
+        Expanded(
+          child: ReorderableListView(
+            buildDefaultDragHandles: false, //remove reorderable icon
+            scrollDirection: Axis.horizontal,
+            shrinkWrap: true,
+
+            children: [
+              ...listCardState.map((item) {
+                return ReorderableDragStartListener(
+                  key: Key(item.stateId),
+                  index: listCardState.indexOf(item),
+                  child: Container(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+                    child: _StateColumn(
+                      cardState: item,
+                      maxStates: listCardState.length,
+                    ),
+                  ),
+                );
+              }).toList(),
+
+            ],
+
+            onReorder: (int oldIndex, int newIndex) {
+              setState(() {
+                if (oldIndex < newIndex) {
+                  newIndex -= 1;
+                }
+                final item = listCardState.removeAt(oldIndex);
+                listCardState.insert(newIndex, item);
+
+                for (var i = 0; i < listCardState.length; i++) {
+                  boardProvider.updateStatePosition(listCardState[i], i);
+                }
+              });
+            },
+          ),
+        ),
+      ],
+    );
   }
 }

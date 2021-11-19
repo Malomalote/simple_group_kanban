@@ -96,6 +96,17 @@ class CardStateQueries {
     db.dispose();
   }
 
+
+  static void updateCardState(CardState cardState) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query =
+        'update card_state set name="${cardState.name}",description="${cardState.description}" where state_id="${cardState.stateId}"';
+    db.execute(query);
+    db.dispose();
+
+  }
+
+
   static CardState _rowToCardState(sqlite.Row r) {
     String id = r['state_id'];
     String name = r['name'];
@@ -105,4 +116,5 @@ class CardStateQueries {
     return CardState(
         stateId: id, name: name, description: description, position: position);
   }
+
 }

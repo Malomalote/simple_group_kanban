@@ -8,6 +8,7 @@ import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/models/priority.dart';
 import 'package:simple_kanban/utils/utils.dart';
+import 'package:simple_kanban/views/widgets/custom_input_decoration.dart';
 
 class KanbanCardDialog extends StatelessWidget {
   final KanbanCard? kanbanCard;
@@ -98,7 +99,7 @@ class _KanbanFormState extends State<_KanbanForm> {
   @override
   Widget build(BuildContext context) {
     final boardProvider = Provider.of<BoardProvider>(context, listen: false);
-    final _formKey = GlobalKey<FormState>();
+    final _cardFormKey = GlobalKey<FormState>();
     // if(widget.kanbanCard==null){
     //   asignedUser=boardProvider.currentUser!.name;
     // }
@@ -124,7 +125,7 @@ class _KanbanFormState extends State<_KanbanForm> {
       child: SizedBox(
         width: 600,
         child: Form(
-          key: _formKey,
+          key: _cardFormKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             children: [
@@ -134,7 +135,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                 maxLines: null,
                 style: const TextStyle(color: Colors.black, fontSize: 14),
                 controller: titleController,
-                decoration: _customInputDecoration(
+                decoration: CustomInputDecoration(
                     hintText: 'Descripción tarea.',
                     labelText:
                         'Ingresa una breve descripción de la tarea (max 100).',
@@ -146,7 +147,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                 maxLines: null,
                 style: const TextStyle(color: Colors.black, fontSize: 14),
                 controller: descriptionController,
-                decoration: _customInputDecoration(
+                decoration: CustomInputDecoration(
                     hintText: 'Comentarios.',
                     labelText: 'Añade comentarios sobre la tarea.',
                     controller: descriptionController),
@@ -414,23 +415,7 @@ class _KanbanFormState extends State<_KanbanForm> {
     }
   }
 
-  InputDecoration _customInputDecoration(
-      {required String hintText,
-      required String labelText,
-      required TextEditingController controller}) {
-    return InputDecoration(
-        hintText: hintText,
-        suffixIcon: GestureDetector(
-            child: const MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: Icon(Icons.clear_rounded,
-                    color: Colors.grey, size: 14)),
-            onTap: () {
-              controller.text = '';
-            }),
-        labelText: labelText,
-        hintStyle: const TextStyle(fontSize: 10));
-  }
+
 }
 //   @override
 //   Widget build(BuildContext context) {
