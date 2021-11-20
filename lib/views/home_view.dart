@@ -100,100 +100,97 @@ class _StateColumnState extends State<_StateColumn> {
     });
 
     return
-    
-    //  (cardsList.isEmpty)
-    //     ? const CircularProgressIndicator()
-    //     : 
-        
+
+        //  (cardsList.isEmpty)
+        //     ? const CircularProgressIndicator()
+        //     :
+
         SizedBox(
-            width: 300,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Spacer(),
-                    FittedBox(
-                      fit: BoxFit.fill,
-                      child: Text(
-                        widget.cardState.name,
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) =>
-                                  StateCardDialog(cardState: widget.cardState));
-                        },
-                        icon: const Icon(Icons.menu, size: 20)),
-                  ],
+      width: 300,
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const Spacer(),
+              FittedBox(
+                fit: BoxFit.fill,
+                child: Text(
+                  widget.cardState.name,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                Expanded(
-                  child: SingleChildScrollView(
+              ),
+              const Spacer(),
+              IconButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            StateCardDialog(cardState: widget.cardState));
+                  },
+                  icon: const Icon(Icons.menu, size: 20)),
+            ],
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              primary: false,
+              child: Column(
+                children: [
+                  ReorderableListView(
+                    buildDefaultDragHandles: false, //remove reorderable icon
                     primary: false,
-                    child: Column(
-                      children: [
-                        ReorderableListView(
-                          buildDefaultDragHandles:
-                              false, //remove reorderable icon
-                          primary: false,
-                          shrinkWrap: true,
+                    shrinkWrap: true,
 
-                          children: [
-                            ...cardsList.map((item) {
-                              return ReorderableDragStartListener(
-                                key: Key(item.cardId),
-                                index: cardsList.indexOf(item),
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 4),
-                                  child: KanbanCardWidget(
-                                    kanbanCard: item,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ],
+                    children: [
+                      ...cardsList.map((item) {
+                        return ReorderableDragStartListener(
+                          key: Key(item.cardId),
+                          index: cardsList.indexOf(item),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 4),
+                            child: KanbanCardWidget(
+                              kanbanCard: item,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ],
 
-                          onReorder: (int oldIndex, int newIndex) {
-                            setState(() {
-                              if (oldIndex < newIndex) {
-                                newIndex -= 1;
-                              }
-                              final item = cardsList.removeAt(oldIndex);
-                              cardsList.insert(newIndex, item);
+                    onReorder: (int oldIndex, int newIndex) {
+                      setState(() {
+                        if (oldIndex < newIndex) {
+                          newIndex -= 1;
+                        }
+                        final item = cardsList.removeAt(oldIndex);
+                        cardsList.insert(newIndex, item);
 
-                              for (var i = 0; i < cardsList.length; i++) {
-                                boardProvider.updateCardPosition(
-                                    cardsList[i], i);
-                              }
-                            });
-                          },
-                        ),
-                        InkWell(
-                            onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) =>
-                                      KanbanCardDialog(
-                                        cardStateDefault: widget.cardState,
-                                      ));
-                            },
-                            child: const Text(
-                              '+',
-                              style: TextStyle(fontSize: 35),
-                            )),
-                      ],
-                    ),
+                        for (var i = 0; i < cardsList.length; i++) {
+                          boardProvider.updateCardPosition(cardsList[i], i);
+                        }
+                      });
+                    },
                   ),
-                ),
-              ],
+                  InkWell(
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) => KanbanCardDialog(
+                                  cardStateDefault: widget.cardState,
+                                ));
+                      },
+                      child: const Text(
+                        '+',
+                        style: TextStyle(fontSize: 35),
+                      )),
+                ],
+              ),
             ),
-          );
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -254,8 +251,6 @@ class _SingleColumnState extends State<_SingleColumn> {
     );
   }
 }
-
-
 
 class _Sidebar extends StatelessWidget {
   const _Sidebar({Key? key}) : super(key: key);

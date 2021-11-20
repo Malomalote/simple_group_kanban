@@ -117,8 +117,8 @@ class _BottonBar extends StatelessWidget {
                     color: Colors.indigoAccent,
                     child: Center(
                         child: Text(team,
-                            style:
-                                const TextStyle(fontSize: 10, color: Colors.white))),
+                            style: const TextStyle(
+                                fontSize: 10, color: Colors.white))),
                   )
               ]),
             ],

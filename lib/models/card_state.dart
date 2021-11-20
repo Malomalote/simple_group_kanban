@@ -10,4 +10,19 @@ class CardState {
     this.description,
     required this.position,
   });
+  
+
+  CardState copyWith({
+    String? stateId,
+    String? name,
+    String? description,
+    int? position,
+  }) {
+    return CardState(
+      stateId: stateId ?? this.stateId,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      position: position ?? this.position,
+    );
+  }
 }

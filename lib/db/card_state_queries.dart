@@ -88,6 +88,21 @@ class CardStateQueries {
     return null;
   }
 
+  static CardState? getCardsStateFromName(String? name) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+
+    sqlite.ResultSet result =
+        db.select('select * from card_state where name="$name"');
+
+    for (var r in result) {
+      db.dispose();
+      return _rowToCardState(r);
+    }
+
+    db.dispose();
+    return null;
+  }
+
   static void setPosition(String id, int newPosition) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
     String query =
@@ -96,16 +111,28 @@ class CardStateQueries {
     db.dispose();
   }
 
-
   static void updateCardState(CardState cardState) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
     String query =
         'update card_state set name="${cardState.name}",description="${cardState.description}" where state_id="${cardState.stateId}"';
     db.execute(query);
     db.dispose();
-
   }
 
+  static void deleteCardState(String id) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query = 'DELETE FROM card_state where state_id="$id"';
+    db.execute(query);
+    db.dispose();
+  }
+
+  static void updatePosition(CardState cardState, int newPosition) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query =
+        'update card_state set position=$newPosition where state_id="${cardState.stateId}"';
+    db.execute(query);
+    db.dispose();
+  }
 
   static CardState _rowToCardState(sqlite.Row r) {
     String id = r['state_id'];
@@ -116,5 +143,4 @@ class CardStateQueries {
     return CardState(
         stateId: id, name: name, description: description, position: position);
   }
-
 }

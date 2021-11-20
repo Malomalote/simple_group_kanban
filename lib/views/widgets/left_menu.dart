@@ -37,11 +37,9 @@ class _LeftMenuState extends State<LeftMenu> {
               icon: Icons.auto_awesome_motion,
               text: 'Añadir Categoría',
               onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) =>
-                                  StateCardDialog());
-                
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) => StateCardDialog());
               })
         ],
       ),
@@ -118,10 +116,9 @@ class _MenuItemState extends State<_MenuItem> {
               children: [
                 SizedBox(width: 8),
                 Tooltip(
-
-                  textStyle: TextStyle(fontSize: 15,color: Colors.white),
+                  textStyle: TextStyle(fontSize: 15, color: Colors.white),
                   height: 40,
-                  message: (!MenuProvider.expand) ? widget.text:'',
+                  message: (!MenuProvider.expand) ? widget.text : '',
                   child: Icon(widget.icon),
                 ),
                 SizedBox(width: 8),

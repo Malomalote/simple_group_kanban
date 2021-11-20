@@ -2,9 +2,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
 import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/models/card_state.dart';
-
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/models/priority.dart';
 import 'package:simple_kanban/utils/utils.dart';
@@ -27,17 +27,40 @@ class KanbanCardDialog extends StatelessWidget {
       // backgroundColor: kanbanCard.cardColor,
       content: _KanbanForm(kanbanCard: kanbanCard, cardState: cardStateDefault),
       actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.pop(context, 'Cancel'),
-          child: const Text('Cancel',
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context, 'OK'),
-          child: const Text('OK',
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+
+        Row(
+          children: [
+                 if(kanbanCard!=null)         TextButton(
+                onPressed: () {
+                  //TODO: Falta implementar borrado
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _DeleteKanbanCardDialog(kanbanCard: kanbanCard));
+                },
+                child: Row(
+                  children: [Icon(Icons.delete,color: Colors.red),
+                    Text(
+                      'Eliminar Tarea',
+                      style:
+                          TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                )),
+            Spacer(),
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Cancel'),
+              child: const Text('Cancel',
+                  style:
+                      TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'OK'),
+              child: const Text('OK',
+                  style:
+                      TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+            ),
+          ],
         ),
       ],
     );
@@ -83,7 +106,8 @@ class _KanbanFormState extends State<_KanbanForm> {
       if (widget.kanbanCard!.teamAsigned != null) {
         asignedTeam = widget.kanbanCard!.teamAsigned!.name;
       }
-      if(widget.kanbanCard!.expirationDate!= null) selectedDate=widget.kanbanCard!.expirationDate;
+      if (widget.kanbanCard!.expirationDate != null)
+        selectedDate = widget.kanbanCard!.expirationDate;
     } else {
       stateDropdownValue = widget.cardState!.name;
     }
@@ -241,7 +265,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                       children: [
                         // (widget.kanbanCard != null &&
                         //         widget.kanbanCard!.expirationDate != null)
-                       ( selectedDate!=null)
+                        (selectedDate != null)
                             ? InkWell(
                                 onTap: () => _selectDate(context),
                                 child: Row(
@@ -251,8 +275,8 @@ class _KanbanFormState extends State<_KanbanForm> {
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    Text(
-                                        DateFormat('dd-MM-yyyy').format(selectedDate!)),
+                                    Text(DateFormat('dd-MM-yyyy')
+                                        .format(selectedDate!)),
                                   ],
                                 ),
                               )
@@ -403,10 +427,9 @@ class _KanbanFormState extends State<_KanbanForm> {
     selectedDate ??= DateTime.now();
     final DateTime? selected = await showDatePicker(
       context: context,
-      initialDate: selectedDate! ,
+      initialDate: selectedDate!,
       firstDate: DateTime(2010),
       lastDate: DateTime(2050),
- 
     );
     if (selected != null && selected != selectedDate) {
       setState(() {
@@ -414,8 +437,6 @@ class _KanbanFormState extends State<_KanbanForm> {
       });
     }
   }
-
-
 }
 //   @override
 //   Widget build(BuildContext context) {
@@ -440,3 +461,41 @@ class _KanbanFormState extends State<_KanbanForm> {
 //     );
 //   }
 // }
+
+class _DeleteKanbanCardDialog extends StatelessWidget {
+  final KanbanCard? kanbanCard;
+  const _DeleteKanbanCardDialog({
+    Key? key,
+    required this.kanbanCard,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final boardProvider= Provider.of<BoardProvider>(context,listen: false);
+    return AlertDialog(
+      title: Text('Elimiar Tarea: ${kanbanCard!.title}'),
+      content: Text('¿Se va a borrar la Tarea ${kanbanCard!.title}'),
+      actions: [
+ TextButton(
+          onPressed: () => Navigator.pop(context, 'Cancel'),
+          child: const Text('Cancel',
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        ),
+        TextButton(
+          child: const Text('OK',
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+          onPressed: () {
+            boardProvider.deleteKanbanCard(kanbanCard!);
+
+            Navigator.of(context)
+              ..pop()
+              ..pop();
+          },
+        ),
+      ],
+    );
+  }
+}
+

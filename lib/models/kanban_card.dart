@@ -36,4 +36,38 @@ class KanbanCard {
     required this.cardColor,
     required this.position,
   });
+
+  KanbanCard copyWith({
+    String? cardId,
+    User? creator,
+    DateTime? creationDate,
+    User? userAsigned,
+    Team? teamAsigned,
+    CardState? cardState,
+    DateTime? stateDate,
+    Priority? priority,
+    String? title,
+    String? description,
+    DateTime? expirationDate,
+    String? private,
+    Color? cardColor,
+    int? position,
+  }) {
+    return KanbanCard(
+      cardId: cardId ?? this.cardId,
+      creator: creator ?? this.creator,
+      creationDate: creationDate ?? this.creationDate,
+      userAsigned: userAsigned ?? this.userAsigned,
+      teamAsigned: teamAsigned ?? this.teamAsigned,
+      cardState: cardState ?? this.cardState,
+      stateDate: stateDate ?? this.stateDate,
+      priority: priority ?? this.priority,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      expirationDate: expirationDate ?? this.expirationDate,
+      private: private ?? this.private,
+      cardColor: cardColor ?? this.cardColor,
+      position: position ?? this.position,
+    );
+  }
 }

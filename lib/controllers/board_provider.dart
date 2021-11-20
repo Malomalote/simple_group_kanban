@@ -17,18 +17,18 @@ import 'package:simple_kanban/utils/utils.dart';
 class BoardProvider with ChangeNotifier {
   User? currentUser;
   String currentUserRol = 'Usuario';
-  List<CardState> listCardState=[];
+  List<CardState> listCardState = [];
   late List<Priority> listPriorities;
   late List<User> listUsers;
   late List<Team> listTeams;
   List<List<KanbanCard>> listKanbanCard = [];
+
   Future<void> initBoard() async {
-     listCardState=[];
-     listKanbanCard = [];
+    listCardState = [];
+    listKanbanCard = [];
     listCardState = CardStateQueries.getAllCardsState(ordered: true);
     for (var l in listCardState) {
-      listKanbanCard
-          .add(CardsQueries.getKanbanCardsFromStatus(l.stateId, true));
+      listKanbanCard.add(CardsQueries.getKanbanCardsFromState(l.stateId, true));
     }
     listPriorities = PrioritiesQueries.getAllPriorities();
     listUsers = UsersQueries.getAllUsers();
@@ -39,7 +39,6 @@ class BoardProvider with ChangeNotifier {
       final rol = RolQueries.getRol(currentUser!.rol.rolId);
       currentUserRol = rol.name;
     }
-    
   }
 
   void updateCardPosition(KanbanCard kanbanCard, int newPosition) {
@@ -62,7 +61,60 @@ class BoardProvider with ChangeNotifier {
   void addCardState(CardState cardState) {
     listCardState.add(cardState);
     CardStateQueries.insertCardState(cardState);
-    
+
+    notifyListeners();
+  }
+
+  List<KanbanCard> getKanbanCardsFromStatus(CardState cardState, bool ordered) {
+    return CardsQueries.getKanbanCardsFromState(cardState.stateId, ordered);
+  }
+
+  String? _newStateWhenDelete;
+
+  String? get newStateWhenDelete => _newStateWhenDelete;
+
+  set newStateWhenDelete(String? value) {
+    _newStateWhenDelete = value;
+    notifyListeners();
+  }
+
+  void deleteCardState(CardState cardState) {
+    final listKanbanCards = getKanbanCardsFromStatus(cardState, true);
+
+    if (_newStateWhenDelete != null) {
+      final newCardState =
+          CardStateQueries.getCardsStateFromName(_newStateWhenDelete);
+      final int initialNewPositon =
+          CardsQueries.getKanbanCardsFromState(newCardState!.stateId, false)
+              .length;
+      for (int i = 0; i < listKanbanCards.length; i++) {
+        CardsQueries.updateState(
+            listKanbanCards[i].cardId, newCardState.stateId);
+        //TODO: Falta hay que ver mas detenidamente si esto funciona bien
+        CardsQueries.updatePosition(
+            listKanbanCards[i].cardId, i + initialNewPositon);
+      }
+
+      _newStateWhenDelete = null;
+    } else {
+      for (var l in listKanbanCards) {
+        CardsQueries.deleteCard(l.cardId);
+      }
+    }
+
+    for (int i = cardState.position + 1; i < listCardState.length; i++) {
+      int newPosition = listCardState[i].position - 1;
+      listCardState[i].copyWith(position: newPosition);
+      CardStateQueries.updatePosition(listCardState[i], newPosition);
+    }
+
+    CardStateQueries.deleteCardState(cardState.stateId);
+
+    notifyListeners();
+  }
+
+  void deleteKanbanCard(KanbanCard kanbanCard){
+    CardsQueries.deleteCard(kanbanCard.cardId);
     notifyListeners();
   }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/controllers/card_state_provider.dart';
-
 import 'package:simple_kanban/models/card_state.dart';
+import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/utils/extensions.dart';
 import 'package:simple_kanban/utils/utils.dart';
 import 'package:simple_kanban/views/widgets/custom_input_decoration.dart';
@@ -25,9 +26,13 @@ class StateCardDialog extends StatelessWidget {
       actions: <Widget>[
         Row(
           children: [
-            TextButton(
+            if(cardState!=null) TextButton(
                 onPressed: () {
-                  //TODO: Falta implementar borrado
+        
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _DeleteDialog(cardState: cardState));
                 },
                 child: Text(
                   'Eliminar Categoría',
@@ -246,6 +251,89 @@ class _ModifyDialog extends StatelessWidget {
               ..pop();
           },
         ),
+      ],
+    );
+  }
+}
+
+class _DeleteDialog extends StatelessWidget {
+  final CardState? cardState;
+  const _DeleteDialog({
+    Key? key,
+    required this.cardState,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final boardProvider = Provider.of<BoardProvider>(context, listen: false);
+    final listKanbanCards =
+        boardProvider.getKanbanCardsFromStatus(cardState!, true);
+    return AlertDialog(
+      title: Text('Eliminar Categoría ${cardState!.name}'),
+      content: (listKanbanCards.isNotEmpty)
+          ? _KanbanCardsToNewState(
+              cardState: cardState!, listKanbanCards: listKanbanCards)
+          : Text('¿Eliminar la categoría?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, 'Cancel'),
+          child: const Text('Cancel',
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        ),
+        TextButton(
+          child: const Text('OK',
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+          onPressed: () {
+            boardProvider.deleteCardState(cardState!);
+
+            Navigator.of(context)
+              ..pop()
+              ..pop();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _KanbanCardsToNewState extends StatelessWidget {
+  final CardState cardState;
+  final List<KanbanCard> listKanbanCards;
+  const _KanbanCardsToNewState({
+    Key? key,
+    required this.cardState,
+    required this.listKanbanCards,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final boardProvider = Provider.of<BoardProvider>(context);
+    final listCardState = boardProvider.listCardState;
+    return DropdownButton<String>(
+      value: boardProvider.newStateWhenDelete,
+      icon: const Icon(Icons.arrow_downward),
+      iconSize: 20,
+      elevation: 16,
+      underline: Container(
+        height: 1,
+        color: Colors.deepPurpleAccent,
+      ),
+      onChanged: (String? newValue) {
+        boardProvider.newStateWhenDelete = newValue;
+      },
+      items: [
+        const DropdownMenuItem(value: '', child: Text('')),
+        ...listCardState
+            .where((e) => e.name!= cardState.name)
+            .map<DropdownMenuItem<String>>((CardState value) {
+          return 
+           DropdownMenuItem<String>(
+            value: value.name,
+            child: Text(value.name),
+          );
+        }).toList()
       ],
     );
   }

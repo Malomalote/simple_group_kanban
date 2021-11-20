@@ -105,7 +105,7 @@ class CardsQueries {
     return null;
   }
 
-  static List<KanbanCard> getKanbanCardsFromStatus(
+  static List<KanbanCard> getKanbanCardsFromState(
       String stateId, bool ordered) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
 
@@ -184,6 +184,21 @@ class CardsQueries {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
     String query =
         'update kanban_card set position=$newPosition where card_id="$id"';
+    db.execute(query);
+    db.dispose();
+  }
+  static void updateState(String id, String idNewState) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query =
+        'update kanban_card set card_state="$idNewState" where card_id="$id"';
+    db.execute(query);
+    
+    db.dispose();
+  }
+  static void deleteCard(String id){
+        sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query =
+        'DELETE FROM kanban_card where card_id="$id"';
     db.execute(query);
     db.dispose();
   }
