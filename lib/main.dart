@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_kanban/controllers/board_provider.dart';
+import 'package:simple_kanban/controllers/menu_provider.dart';
 import 'package:simple_kanban/views/home_view.dart';
 
 import 'db/kanban_database.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => BoardProvider()),
+        ChangeNotifierProvider(create: (_) => MenuProvider()),
       ],
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,

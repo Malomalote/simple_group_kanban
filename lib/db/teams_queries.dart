@@ -65,6 +65,20 @@ class TeamsQueries {
     db.dispose();
     return null;
   }
+  static Team? getTeamFromName(String name) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+
+    sqlite.ResultSet result =
+        db.select('select * from team where name="$name"');
+
+    for (var r in result) {
+      db.dispose();
+      return _rowToTeam(r);
+    }
+
+    db.dispose();
+    return null;
+  }
 
   static Team _rowToTeam(sqlite.Row r) {
     String id = r['team_id'];

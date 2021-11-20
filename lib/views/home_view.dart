@@ -1,5 +1,4 @@
 import 'package:collapsible_sidebar/collapsible_sidebar.dart';
-import 'package:collapsible_sidebar/collapsible_sidebar/collapsible_item.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,13 +7,11 @@ import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/utils/data_generator.dart';
-import 'package:simple_kanban/utils/utils.dart';
 import 'package:simple_kanban/views/widgets/kanban_card_dialog.dart';
 import 'package:simple_kanban/views/widgets/kanban_card_widget.dart';
 import 'package:simple_kanban/views/widgets/left_menu.dart';
 import 'package:simple_kanban/views/widgets/state_card_dialog.dart';
 
-import 'dart:math' as math show pi;
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -26,8 +23,6 @@ class HomeView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       body: const _Body(),
-      //_Sidebar(),
-      //  _Body(),
       floatingActionButton: FloatingActionButton(
         //TODO: Falta borrar este botón
         onPressed: () {

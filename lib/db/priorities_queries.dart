@@ -73,6 +73,20 @@ class PrioritiesQueries {
     db.dispose();
     return null;
   }
+  static Priority? getPriorityFromName(String name) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+
+    sqlite.ResultSet result =
+        db.select('select * from priority where name="$name"');
+
+    for (var r in result) {
+      db.dispose();
+      return _rowToPriority(r);
+    }
+
+    db.dispose();
+    return null;
+  }
 
   static Priority? getDefaultPriority(){
         sqlite.Database db = sqlite.sqlite3.open(finalPath);

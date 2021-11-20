@@ -12,7 +12,6 @@ import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/models/priority.dart';
 import 'package:simple_kanban/models/team.dart';
 import 'package:simple_kanban/models/user.dart';
-import 'package:simple_kanban/utils/utils.dart';
 
 class BoardProvider with ChangeNotifier {
   User? currentUser;
@@ -113,8 +112,44 @@ class BoardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteKanbanCard(KanbanCard kanbanCard){
+  void deleteKanbanCard(KanbanCard kanbanCard) {
     CardsQueries.deleteCard(kanbanCard.cardId);
     notifyListeners();
   }
+
+  Color _backgroundKanbanColor = Colors.white;
+
+  Color get backgroundKanbanColor => _backgroundKanbanColor;
+
+  set backgroundKanbanColor(Color value) {
+    _backgroundKanbanColor = value;
+    Future.delayed(Duration.zero, () {
+      notifyListeners();
+    });
+  }
+
+  CardState? getCardStateFromName(String name) {
+    return CardStateQueries.getCardsStateFromName(name);
+  }
+
+  Priority? getPriorityFromName(String name){
+    return PrioritiesQueries.getPriorityFromName(name);
+  }
+  User? getUserFromName(String name){
+    return UsersQueries.getUserFromName(name);
+  }
+  Team? getTeamFromName(String name){
+    return TeamsQueries.getTeamFromName(name);
+  }
+
+  void addKanbanCard(KanbanCard kanbanCard){
+    CardsQueries.insertKanbanCard(kanbanCard);
+    notifyListeners();
+  }
+  void updateKanbanCard(KanbanCard kanbanCard){
+    CardsQueries.updateKanbanCard(kanbanCard);
+    notifyListeners();
+  }
+
+  
 }

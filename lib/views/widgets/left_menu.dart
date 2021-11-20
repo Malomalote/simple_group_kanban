@@ -1,24 +1,22 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/gestures/events.dart';
+
 import 'package:provider/provider.dart';
 
 import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/controllers/menu_provider.dart';
 import 'package:simple_kanban/views/widgets/state_card_dialog.dart';
 
-class LeftMenu extends StatefulWidget {
+class LeftMenu extends StatelessWidget {
   const LeftMenu({Key? key}) : super(key: key);
 
-  @override
-  State<LeftMenu> createState() => _LeftMenuState();
-}
 
-class _LeftMenuState extends State<LeftMenu> {
+  
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {final MenuProvider menuProvider=Provider.of<MenuProvider>(context);
     final boardProvider = Provider.of<BoardProvider>(context, listen: false);
     return Container(
-      width: MenuProvider.menuWidth,
+      width: menuProvider.menuWidth,
       decoration: BoxDecoration(
         color: Colors.grey.shade300,
         borderRadius: BorderRadius.circular(15),
@@ -26,20 +24,23 @@ class _LeftMenuState extends State<LeftMenu> {
       child: Column(
         children: [
           GestureDetector(
-            child: Icon(Icons.menu_open),
+            child: const Icon(Icons.menu_open),
             onTap: () {
-              MenuProvider.switchMenu();
-              setState(() {});
+              
+
+                menuProvider.switchMenu();
+     
             },
           ),
-          if (boardProvider.currentUserRol == 'Administrador') _AdminMenu(),
+          if (boardProvider.currentUserRol == 'Administrador')
+            const _AdminMenu(),
           _MenuItem(
               icon: Icons.auto_awesome_motion,
               text: 'Añadir Categoría',
               onPressed: () {
                 showDialog(
                     context: context,
-                    builder: (BuildContext context) => StateCardDialog());
+                    builder: (BuildContext context) => const StateCardDialog());
               })
         ],
       ),
@@ -76,8 +77,8 @@ class _AdminMenu extends StatelessWidget {
               print('borrar usuario');
             },
           ),
-          Text('uno'),
-          Text('dos'),
+          const Text('uno'),
+          const Text('dos'),
         ],
       ),
     );
@@ -103,6 +104,7 @@ class _MenuItemState extends State<_MenuItem> {
   Color backgroundColor = Colors.white;
   @override
   Widget build(BuildContext context) {
+    final MenuProvider menuProvider=Provider.of<MenuProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: MouseRegion(
@@ -114,19 +116,21 @@ class _MenuItemState extends State<_MenuItem> {
             onTap: widget.onPressed,
             child: Row(
               children: [
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Tooltip(
-                  textStyle: TextStyle(fontSize: 15, color: Colors.white),
+                  textStyle: const TextStyle(fontSize: 15, color: Colors.white),
                   height: 40,
-                  message: (!MenuProvider.expand) ? widget.text : '',
+                  message: (!menuProvider.expand) ? widget.text : '',
                   child: Icon(widget.icon),
                 ),
-                SizedBox(width: 8),
-                if (MenuProvider.expand)
-                  Text(widget.text,
-                      style: TextStyle(
-                        fontSize: 16,
-                      )),
+                const SizedBox(width: 8),
+                if (menuProvider.expand)
+                  Text(
+                    widget.text,
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
               ],
             ),
           ),

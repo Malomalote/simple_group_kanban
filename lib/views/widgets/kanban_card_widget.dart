@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/views/widgets/kanban_card_dialog.dart';
 
@@ -10,12 +12,16 @@ class KanbanCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final boardProvider=Provider.of<BoardProvider>(context,listen: false);
     return GestureDetector(
       onTap: () {
         showDialog(
             context: context,
-            builder: (BuildContext context) =>
-                KanbanCardDialog(kanbanCard: kanbanCard));
+            builder: (BuildContext context) {
+              boardProvider.backgroundKanbanColor=kanbanCard.cardColor;
+              return  KanbanCardDialog(kanbanCard: kanbanCard);}
+                
+                );
       },
       child: Container(
         width: double.infinity,

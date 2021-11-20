@@ -4,11 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:simple_kanban/controllers/board_provider.dart';
+import 'package:simple_kanban/controllers/kanban_card_provider.dart';
 import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/models/priority.dart';
 import 'package:simple_kanban/utils/utils.dart';
 import 'package:simple_kanban/views/widgets/custom_input_decoration.dart';
+import 'package:simple_kanban/views/widgets/kanban_card_widget.dart';
 
 class KanbanCardDialog extends StatelessWidget {
   final KanbanCard? kanbanCard;
@@ -21,44 +23,58 @@ class KanbanCardDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final boardProvider = Provider.of<BoardProvider>(context);
+
+
     return AlertDialog(
       contentPadding: const EdgeInsets.all(8),
       buttonPadding: const EdgeInsets.all(1),
-      // backgroundColor: kanbanCard.cardColor,
+      backgroundColor: boardProvider.backgroundKanbanColor,
       content: _KanbanForm(kanbanCard: kanbanCard, cardState: cardStateDefault),
       actions: <Widget>[
-
         Row(
           children: [
-                 if(kanbanCard!=null)         TextButton(
-                onPressed: () {
-                  //TODO: Falta implementar borrado
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          _DeleteKanbanCardDialog(kanbanCard: kanbanCard));
-                },
-                child: Row(
-                  children: [Icon(Icons.delete,color: Colors.red),
-                    Text(
-                      'Eliminar Tarea',
-                      style:
-                          TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                )),
+            if (kanbanCard != null)
+              TextButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            _DeleteKanbanCardDialog(kanbanCard: kanbanCard));
+                  },
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete, color: Colors.red),
+                      Text(
+                        'Eliminar Tarea',
+                        style: TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),),
             Spacer(),
             TextButton(
               onPressed: () => Navigator.pop(context, 'Cancel'),
               child: const Text('Cancel',
-                  style:
-                      TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, 'OK'),
+              onPressed: (){
+                if (KanbanCardProvider.kanbanCardGlobalKey.currentState!.validate() &&
+                KanbanCardProvider.title!=null &&
+                    KanbanCardProvider.title!.trim().isNotEmpty && KanbanCardProvider.cardState!=null) {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _ModifyKanbanCardDialog());
+                }
+
+
+              },
               child: const Text('OK',
-                  style:
-                      TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -96,6 +112,7 @@ class _KanbanFormState extends State<_KanbanForm> {
   void initState() {
     super.initState();
     if (widget.kanbanCard != null) {
+      KanbanCardProvider.initProvider(widget.kanbanCard!);
       titleController.text = widget.kanbanCard!.title;
       descriptionController.text = widget.kanbanCard!.description ?? '';
       stateDropdownValue = widget.kanbanCard!.cardState.name;
@@ -106,10 +123,14 @@ class _KanbanFormState extends State<_KanbanForm> {
       if (widget.kanbanCard!.teamAsigned != null) {
         asignedTeam = widget.kanbanCard!.teamAsigned!.name;
       }
-      if (widget.kanbanCard!.expirationDate != null)
+      if (widget.kanbanCard!.expirationDate != null) {
         selectedDate = widget.kanbanCard!.expirationDate;
+      }
     } else {
       stateDropdownValue = widget.cardState!.name;
+      KanbanCardProvider.private=private.toString();
+    
+  
     }
   }
 
@@ -123,16 +144,18 @@ class _KanbanFormState extends State<_KanbanForm> {
   @override
   Widget build(BuildContext context) {
     final boardProvider = Provider.of<BoardProvider>(context, listen: false);
-    final _cardFormKey = GlobalKey<FormState>();
-    // if(widget.kanbanCard==null){
-    //   asignedUser=boardProvider.currentUser!.name;
-    // }
+
+    // final _cardFormKey = GlobalKey<FormState>();
+    if(widget.kanbanCard==null){
+      asignedUser=boardProvider.currentUser!.name;
+       KanbanCardProvider.userAsigned=boardProvider.currentUser;
+       KanbanCardProvider.creator=boardProvider.currentUser;
+      KanbanCardProvider.priority=boardProvider.getDefaultPriority();
+      KanbanCardProvider.creationDate=DateTime.now();
+    }
 
     List<DropdownMenuItem<String>> buildStateDropdown() {
       List<DropdownMenuItem<String>> toReturn = [];
-      // toReturn.add(DropdownMenuItem<String>(
-      //   child:
-      //   Text('')));
       toReturn.addAll(boardProvider.listCardState
           .map((e) => e.name)
           .map<DropdownMenuItem<String>>((String value) {
@@ -149,7 +172,7 @@ class _KanbanFormState extends State<_KanbanForm> {
       child: SizedBox(
         width: 600,
         child: Form(
-          key: _cardFormKey,
+          key: KanbanCardProvider.kanbanCardGlobalKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             children: [
@@ -164,10 +187,18 @@ class _KanbanFormState extends State<_KanbanForm> {
                     labelText:
                         'Ingresa una breve descripción de la tarea (max 100).',
                     controller: titleController),
+                onChanged: (value) {
+                  KanbanCardProvider.title = value;
+                },
+                validator: (_) {
+                  if (titleController.text.isEmpty ||
+                      titleController.text.length > 100) {
+                    return 'La descripción corta debe contener entre 1 y 100 caracteres';
+                  }
+                },
               ),
               TextFormField(
                 autocorrect: false,
-                // maxLength: 100,
                 maxLines: null,
                 style: const TextStyle(color: Colors.black, fontSize: 14),
                 controller: descriptionController,
@@ -175,6 +206,9 @@ class _KanbanFormState extends State<_KanbanForm> {
                     hintText: 'Comentarios.',
                     labelText: 'Añade comentarios sobre la tarea.',
                     controller: descriptionController),
+                    onChanged: (value){
+                      KanbanCardProvider.title=value;
+                    },
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -188,6 +222,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                       onChanged: (newValue) => setState(
                         () {
                           private = newValue;
+                          KanbanCardProvider.private=newValue.toString();
                         },
                       ),
                     ),
@@ -198,7 +233,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text('Lista:',
+                        const Text('Categoría:',
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         const SizedBox(width: 20),
                         DropdownButton<String>(
@@ -216,6 +251,8 @@ class _KanbanFormState extends State<_KanbanForm> {
                           onChanged: (String? newValue) {
                             setState(() {
                               stateDropdownValue = newValue!;
+                              KanbanCardProvider.cardState=boardProvider.getCardStateFromName(newValue);
+                              KanbanCardProvider.stateDate=DateTime.now();
                             });
                           },
                           items: buildStateDropdown(),
@@ -247,6 +284,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                       onChanged: (String? newValue) {
                         setState(() {
                           priorityDropdownValue = newValue!;
+                          KanbanCardProvider.priority=boardProvider.getPriorityFromName(newValue);
                         });
                       },
                       items: boardProvider.listPriorities
@@ -310,10 +348,20 @@ class _KanbanFormState extends State<_KanbanForm> {
                             return Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 2.0),
-                              child: Container(
-                                width: 30,
-                                height: 30,
-                                color: kanbanColors[index],
+                              child: GestureDetector(
+                                onTap: () {
+                                  boardProvider.backgroundKanbanColor =
+                                      kanbanColors[index];
+                                      KanbanCardProvider.cardColor=kanbanColors[index];
+                                },
+                                child: Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                      color: kanbanColors[index],
+                                      border: Border.all(
+                                          color: Colors.grey, width: 1)),
+                                ),
                               ),
                             );
                           }),
@@ -340,6 +388,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                     onChanged: (String? newValue) {
                       setState(() {
                         asignedUser = newValue!;
+                        KanbanCardProvider.userAsigned=boardProvider.getUserFromName(newValue);
                       });
                     },
                     items: boardProvider.listUsers
@@ -375,6 +424,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                     onChanged: (String? newValue) {
                       setState(() {
                         asignedTeam = newValue!;
+                        KanbanCardProvider.teamAsigned=boardProvider.getTeamFromName(newValue);
                       });
                     },
                     items: [
@@ -388,7 +438,8 @@ class _KanbanFormState extends State<_KanbanForm> {
                         );
                       }).toList()
                     ],
-                  ),
+              
+                ),
                 ],
               ),
               const SizedBox(height: 15),
@@ -434,6 +485,7 @@ class _KanbanFormState extends State<_KanbanForm> {
     if (selected != null && selected != selectedDate) {
       setState(() {
         selectedDate = selected;
+        KanbanCardProvider.expirationDate= selected;
       });
     }
   }
@@ -471,12 +523,12 @@ class _DeleteKanbanCardDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final boardProvider= Provider.of<BoardProvider>(context,listen: false);
+    final boardProvider = Provider.of<BoardProvider>(context, listen: false);
     return AlertDialog(
       title: Text('Elimiar Tarea: ${kanbanCard!.title}'),
       content: Text('¿Se va a borrar la Tarea ${kanbanCard!.title}'),
       actions: [
- TextButton(
+        TextButton(
           onPressed: () => Navigator.pop(context, 'Cancel'),
           child: const Text('Cancel',
               style:
@@ -499,3 +551,47 @@ class _DeleteKanbanCardDialog extends StatelessWidget {
   }
 }
 
+class _ModifyKanbanCardDialog extends StatelessWidget {
+  const _ModifyKanbanCardDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final boardProvider = Provider.of<BoardProvider>(context, listen: false);
+    return AlertDialog(
+      title: (KanbanCardProvider.isNewKanbanCard)?
+      const Text('Añadir tarea')
+      : const Text('Modificar tarea'),
+      content: (KanbanCardProvider.isNewKanbanCard)
+      ? Text('¿Añadir tarea: ${KanbanCardProvider.title}')
+      : Text ('¿Modificar la tarea: ${KanbanCardProvider.title}'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, 'Cancel'),
+          child: const Text('Cancel',
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        ),
+TextButton(
+          child: const Text('OK',
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+          onPressed: () {
+           
+           KanbanCardProvider.position=boardProvider.getKanbanCardsFromStatus(KanbanCardProvider.cardState!, false).length;
+
+          (KanbanCardProvider.isNewKanbanCard) ?
+          boardProvider.addKanbanCard(KanbanCardProvider.getKanbanCard())
+          :boardProvider.updateKanbanCard(KanbanCardProvider.getKanbanCard());
+
+          KanbanCardProvider.isNewKanbanCard=true;
+            Navigator.of(context)
+              ..pop()
+              ..pop();
+          },
+        ),
+
+      ],
+
+    );
+  }
+}

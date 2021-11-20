@@ -74,6 +74,21 @@ class UsersQueries {
     db.dispose();
     return null;
   }
+  static User? getUserFromName(String? name) {
+    if (name == null) return null;
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+
+    sqlite.ResultSet result =
+        db.select('select * from user where system_name="$name"');
+
+    for (var r in result) {
+      db.dispose();
+      return _rowToUser(r);
+    }
+
+    db.dispose();
+    return null;
+  }
 
   static User _rowToUser(sqlite.Row r) {
     String id = r['user_id'];

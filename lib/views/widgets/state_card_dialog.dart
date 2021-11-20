@@ -34,12 +34,12 @@ class StateCardDialog extends StatelessWidget {
                       builder: (BuildContext context) =>
                           _DeleteDialog(cardState: cardState));
                 },
-                child: Text(
+                child: const Text(
                   'Eliminar Categoría',
                   style:
-                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                      const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                 )),
-            Spacer(),
+            const Spacer(),
             TextButton(
               onPressed: () => Navigator.pop(context, 'Cancel'),
               child: const Text('Cancel',
@@ -53,7 +53,7 @@ class StateCardDialog extends StatelessWidget {
                   showDialog(
                       context: context,
                       builder: (BuildContext context) =>
-                          _ModifyDialog(cardState: cardState));
+                          _ModifyStateDialog(cardState: cardState));
                 }
               },
 
@@ -203,9 +203,9 @@ class _StateFormState extends State<_StateForm> {
   }
 }
 
-class _ModifyDialog extends StatelessWidget {
+class _ModifyStateDialog extends StatelessWidget {
   final CardState? cardState;
-  const _ModifyDialog({Key? key, this.cardState}) : super(key: key);
+  const _ModifyStateDialog({Key? key, this.cardState}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -273,7 +273,7 @@ class _DeleteDialog extends StatelessWidget {
       content: (listKanbanCards.isNotEmpty)
           ? _KanbanCardsToNewState(
               cardState: cardState!, listKanbanCards: listKanbanCards)
-          : Text('¿Eliminar la categoría?'),
+          : const Text('¿Eliminar la categoría?'),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, 'Cancel'),

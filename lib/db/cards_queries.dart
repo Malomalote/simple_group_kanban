@@ -68,6 +68,39 @@ class CardsQueries {
     return -1;
   }
 
+  static int updateKanbanCard(KanbanCard card) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+
+    String sql = 'select * from kanban_card where card_id="${card.cardId}"';
+    sqlite.ResultSet result = db.select(sql);
+    if (result.isNotEmpty) {
+      final String creator = card.creator.userId;
+      final String creationDate = card.creationDate.toString();
+      final String userAsigned = card.userAsigned.userId;
+      String? teamAsigned;
+
+      teamAsigned = card.teamAsigned?.teamId ?? '';
+
+      final String cardState = card.cardState.stateId;
+      final String stateDate = card.stateDate.toString();
+      final String priority = card.priority.priorityId;
+      final String title = card.title;
+      final String description = card.description ?? '';
+      final String expirationDate = card.expirationDate?.toString() ?? '';
+      final String private = card.private;
+      final int cardColor = Utils.colorToInt(card.cardColor);
+      final int position = card.position;
+
+      final query = 
+          'UPDATE kanban_card SET creator = "$creator", creation_date="$creationDate", user_asigned = "$userAsigned",team_asigned = "$teamAsigned", card_state = "$cardState", state_date = "$stateDate", priority = "$priority", title = "$title", description = "$description",expiration_date = "$expirationDate", private = "$private", card_color = "$cardColor",position = "$position" WHERE card_id="${card.cardId}"';
+      db.execute(query);
+      db.dispose();
+      return 0;
+    }
+    db.dispose();
+    return -1;
+  }
+
   static List<KanbanCard> getAllKanbanCards(bool ordered) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
 
