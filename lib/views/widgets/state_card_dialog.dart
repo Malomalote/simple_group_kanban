@@ -4,6 +4,8 @@ import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/controllers/card_state_provider.dart';
 
 import 'package:simple_kanban/models/card_state.dart';
+import 'package:simple_kanban/utils/extensions.dart';
+import 'package:simple_kanban/utils/utils.dart';
 import 'package:simple_kanban/views/widgets/custom_input_decoration.dart';
 
 class StateCardDialog extends StatelessWidget {
@@ -15,34 +17,47 @@ class StateCardDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (cardState == null) CardStateProvider.newcardState = true;
     return AlertDialog(
       contentPadding: const EdgeInsets.all(8),
       buttonPadding: const EdgeInsets.all(15),
       content: _StateForm(cardState: cardState),
       actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.pop(context, 'Cancel'),
-          child: const Text('Cancel',
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-        ),
-        TextButton(
-          onPressed: () {
-            if (CardStateProvider.stateGlobalKey.currentState!.validate() &&
-                CardStateProvider.nameState.isNotEmpty) {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      _ModifyDialog(cardState: cardState));
-            } else {
-              print('laskdjflañskdjfalsdjflaskdfa');
-            }
-          },
+        Row(
+          children: [
+            TextButton(
+                onPressed: () {
+                  //TODO: Falta implementar borrado
+                },
+                child: Text(
+                  'Eliminar Categoría',
+                  style:
+                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                )),
+            Spacer(),
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Cancel'),
+              child: const Text('Cancel',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
+            ),
+            TextButton(
+              onPressed: () {
+                if (CardStateProvider.stateGlobalKey.currentState!.validate() &&
+                    CardStateProvider.nameState.isNotEmpty) {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _ModifyDialog(cardState: cardState));
+                }
+              },
 
-          //  () => Navigator.pop(context, 'OK'),
-          child: const Text('OK',
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              //  () => Navigator.pop(context, 'OK'),
+              child: const Text('OK',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
+            ),
+          ],
         ),
       ],
     );
@@ -70,8 +85,8 @@ class _StateFormState extends State<_StateForm> {
     if (widget.cardState != null) {
       nameController.text = widget.cardState!.name;
       descriptionController.text = widget.cardState!.description ?? '';
-      CardStateProvider.nameState=widget.cardState!.name;
-      CardStateProvider.descriptionState=widget.cardState!.description ?? '';
+      CardStateProvider.nameState = widget.cardState!.name;
+      CardStateProvider.descriptionState = widget.cardState!.description ?? '';
     }
   }
 
@@ -120,6 +135,26 @@ class _StateFormState extends State<_StateForm> {
                   CardStateProvider.nameState = value;
                 },
                 validator: (_) {
+                  for (var state in boardProvider.listCardState) {
+                    if (state.name.trim().toUpperCase().removeAccents() ==
+                        nameController.text
+                            .trim()
+                            .toUpperCase()
+                            // ignore: curly_braces_in_flow_control_structures
+                            .removeAccents()) if (state.name
+                                .trim()
+                                .toUpperCase()
+                                .removeAccents() ==
+                            nameController.text
+                                .trim()
+                                .toUpperCase()
+                                .removeAccents() &&
+                        ((widget.cardState != null &&
+                                state.stateId != widget.cardState!.stateId) ||
+                            CardStateProvider.newcardState)) {
+                      return 'El nombre ya existe';
+                    }
+                  }
                   if (nameController.text.isEmpty ||
                       nameController.text.length > 100) {
                     return 'La descripción corta debe contener entre 1 y 100 caracteres';
@@ -172,8 +207,12 @@ class _ModifyDialog extends StatelessWidget {
     final boardProvider = Provider.of<BoardProvider>(context, listen: false);
 
     return AlertDialog(
-      title: const Text('Modificar Categoría'),
-      content: const Text('¿Se va a modificar la categoría seleccionada?'),
+      title: (CardStateProvider.newcardState)
+          ? const Text('Añadir Categoría')
+          : const Text('Modificar Categoría'),
+      content: (CardStateProvider.newcardState)
+          ? const Text('¿Añadir una nueva categoría?')
+          : const Text('¿Modificar la categoría seleccionada?'),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -192,13 +231,19 @@ class _ModifyDialog extends StatelessWidget {
                   name: CardStateProvider.nameState,
                   description: CardStateProvider.descriptionState,
                   position: cardState!.position);
+
               boardProvider.updateCardState(newCardState);
-              Navigator.of(context)
-                ..pop()
-                ..pop();
             } else {
-              Navigator.pop(context);
+              final newCardState = CardState(
+                  stateId: Utils.newNuid(),
+                  name: CardStateProvider.nameState,
+                  description: CardStateProvider.descriptionState,
+                  position: boardProvider.listCardState.length);
+              boardProvider.addCardState(newCardState);
             }
+            Navigator.of(context)
+              ..pop()
+              ..pop();
           },
         ),
       ],

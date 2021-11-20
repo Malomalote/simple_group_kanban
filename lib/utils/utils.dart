@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nuid/nuid.dart';
 
 enum CardDirection { izquierda, derecha }
 
@@ -17,6 +18,11 @@ class Utils {
     if (dniNumber.startsWith('Z')) dniNumber = dniNumber.replaceFirst('Z', '2');
     final pos = int.parse(dniNumber) % 23;
     return dniLetter == letters[pos];
+  }
+
+  static String newNuid(){
+      Nuid nuid = Nuid.instance;
+      return nuid.next();
   }
 
   static int colorToInt(Color color) {

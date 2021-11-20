@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_kanban/db/card_state_queries.dart';
 import 'package:simple_kanban/db/cards_queries.dart';
 import 'package:simple_kanban/db/priorities_queries.dart';
+import 'package:simple_kanban/db/rol_queries.dart';
 import 'package:simple_kanban/db/teams_queries.dart';
 import 'package:simple_kanban/db/users_queries.dart';
 import 'package:simple_kanban/models/card_state.dart';
@@ -15,38 +16,53 @@ import 'package:simple_kanban/utils/utils.dart';
 
 class BoardProvider with ChangeNotifier {
   User? currentUser;
-  late List<CardState> listCardState;
+  String currentUserRol = 'Usuario';
+  List<CardState> listCardState=[];
   late List<Priority> listPriorities;
   late List<User> listUsers;
   late List<Team> listTeams;
   List<List<KanbanCard>> listKanbanCard = [];
   Future<void> initBoard() async {
+     listCardState=[];
+     listKanbanCard = [];
     listCardState = CardStateQueries.getAllCardsState(ordered: true);
     for (var l in listCardState) {
       listKanbanCard
           .add(CardsQueries.getKanbanCardsFromStatus(l.stateId, true));
     }
-    listPriorities=PrioritiesQueries.getAllPriorities();
-    listUsers=UsersQueries.getAllUsers();
+    listPriorities = PrioritiesQueries.getAllPriorities();
+    listUsers = UsersQueries.getAllUsers();
     listTeams = TeamsQueries.getAllTeam();
-    final username=Platform.environment['USERNAME'];
-    currentUser=UsersQueries.getUserFromSystemName(username);
+    final username = Platform.environment['USERNAME'];
+    currentUser = UsersQueries.getUserFromSystemName(username);
+    if (currentUser != null) {
+      final rol = RolQueries.getRol(currentUser!.rol.rolId);
+      currentUserRol = rol.name;
+    }
+    
   }
 
   void updateCardPosition(KanbanCard kanbanCard, int newPosition) {
     CardsQueries.updatePosition(kanbanCard.cardId, newPosition);
   }
 
-  void updateStatePosition(CardState cardState, int newPosition){
+  void updateStatePosition(CardState cardState, int newPosition) {
     CardStateQueries.setPosition(cardState.stateId, newPosition);
   }
 
-  Priority? getDefaultPriority(){
-   return PrioritiesQueries.getDefaultPriority();
+  Priority? getDefaultPriority() {
+    return PrioritiesQueries.getDefaultPriority();
   }
 
-  void updateCardState(CardState cardState){
+  void updateCardState(CardState cardState) {
     CardStateQueries.updateCardState(cardState);
+    notifyListeners();
+  }
+
+  void addCardState(CardState cardState) {
+    listCardState.add(cardState);
+    CardStateQueries.insertCardState(cardState);
+    
     notifyListeners();
   }
 }

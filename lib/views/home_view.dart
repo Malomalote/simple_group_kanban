@@ -1,3 +1,5 @@
+import 'package:collapsible_sidebar/collapsible_sidebar.dart';
+import 'package:collapsible_sidebar/collapsible_sidebar/collapsible_item.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +11,10 @@ import 'package:simple_kanban/utils/data_generator.dart';
 import 'package:simple_kanban/utils/utils.dart';
 import 'package:simple_kanban/views/widgets/kanban_card_dialog.dart';
 import 'package:simple_kanban/views/widgets/kanban_card_widget.dart';
+import 'package:simple_kanban/views/widgets/left_menu.dart';
 import 'package:simple_kanban/views/widgets/state_card_dialog.dart';
+
+import 'dart:math' as math show pi;
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -21,6 +26,8 @@ class HomeView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       body: const _Body(),
+      //_Sidebar(),
+      //  _Body(),
       floatingActionButton: FloatingActionButton(
         //TODO: Falta borrar este botón
         onPressed: () {
@@ -50,7 +57,7 @@ class _Body extends StatelessWidget {
       width: double.infinity,
       child: Row(
         children: [
-
+          LeftMenu(),
           Expanded(
             child: ScrollConfiguration(
               behavior: ScrollConfiguration.of(context).copyWith(
@@ -92,16 +99,19 @@ class _StateColumnState extends State<_StateColumn> {
       cardsList = boardProvider.listKanbanCard[widget.cardState.position];
     });
 
-    return (cardsList.isEmpty)
-        ? const CircularProgressIndicator()
-        : SizedBox(
+    return
+    
+    //  (cardsList.isEmpty)
+    //     ? const CircularProgressIndicator()
+    //     : 
+        
+        SizedBox(
             width: 300,
             child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-
                     const Spacer(),
                     FittedBox(
                       fit: BoxFit.fill,
@@ -223,7 +233,6 @@ class _SingleColumnState extends State<_SingleColumn> {
                   ),
                 );
               }).toList(),
-
             ],
 
             onReorder: (int oldIndex, int newIndex) {
@@ -244,4 +253,30 @@ class _SingleColumnState extends State<_SingleColumn> {
       ],
     );
   }
+}
+
+
+
+class _Sidebar extends StatelessWidget {
+  const _Sidebar({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    List<CollapsibleItem> _items = _generateItems();
+    print(_items.length);
+
+    return Container(
+      child: CollapsibleSidebar(items: _items, body: _Body()),
+    );
+  }
+}
+
+List<CollapsibleItem> _generateItems() {
+  return [
+    CollapsibleItem(
+        text: 'Añadir categoría',
+        icon: Icons.add,
+        onPressed: () => StateCardDialog(),
+        isSelected: true),
+  ];
 }

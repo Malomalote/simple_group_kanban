@@ -7,5 +7,6 @@ class CardStateProvider{
   static String nameState='';
   static String descriptionState='';
   static bool cardStateFormValid=true;
+  static bool newcardState=false;
 
 }
