@@ -79,7 +79,7 @@ class UsersQueries {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
 
     sqlite.ResultSet result =
-        db.select('select * from user where system_name="$name"');
+        db.select('select * from user where name="$name"');
 
     for (var r in result) {
       db.dispose();

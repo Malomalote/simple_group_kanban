@@ -46,7 +46,7 @@ class KanbanCardProvider {
   static KanbanCard getKanbanCard(){
     
     final newId = cardId ?? Utils.newNuid();
-    KanbanCard kanbanCard = KanbanCard(cardId: newId, creator: creator!, creationDate: creationDate!, userAsigned: userAsigned!, cardState: cardState!, stateDate: stateDate!, priority: priority!, title: title!, description: description!, private: private!, cardColor: cardColor!, position: position!);
+    KanbanCard kanbanCard = KanbanCard(cardId: newId, creator: creator!, creationDate: creationDate!, userAsigned: userAsigned!, cardState: cardState!, stateDate: stateDate!, priority: priority!, title: title!, description: description, private: private!, cardColor: cardColor!, position: position!,expirationDate: expirationDate,teamAsigned: teamAsigned);
     return kanbanCard;
   }
 }

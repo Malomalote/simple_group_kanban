@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,16 +17,18 @@ import 'package:simple_kanban/views/widgets/kanban_card_widget.dart';
 class KanbanCardDialog extends StatelessWidget {
   final KanbanCard? kanbanCard;
   final CardState? cardStateDefault;
+  final bool newCard;
   const KanbanCardDialog({
     Key? key,
     this.kanbanCard,
     this.cardStateDefault,
+    required this.newCard,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final boardProvider = Provider.of<BoardProvider>(context);
-
+    KanbanCardProvider.isNewKanbanCard=newCard;
 
     return AlertDialog(
       contentPadding: const EdgeInsets.all(8),
@@ -36,22 +40,23 @@ class KanbanCardDialog extends StatelessWidget {
           children: [
             if (kanbanCard != null)
               TextButton(
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _DeleteKanbanCardDialog(kanbanCard: kanbanCard));
-                  },
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete, color: Colors.red),
-                      Text(
-                        'Eliminar Tarea',
-                        style: TextStyle(
-                            color: Colors.red, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _DeleteKanbanCardDialog(kanbanCard: kanbanCard));
+                },
+                child: Row(
+                  children: [
+                    Icon(Icons.delete, color: Colors.red),
+                    Text(
+                      'Eliminar Tarea',
+                      style: TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
             Spacer(),
             TextButton(
               onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -60,17 +65,17 @@ class KanbanCardDialog extends StatelessWidget {
                       color: Colors.black, fontWeight: FontWeight.bold)),
             ),
             TextButton(
-              onPressed: (){
-                if (KanbanCardProvider.kanbanCardGlobalKey.currentState!.validate() &&
-                KanbanCardProvider.title!=null &&
-                    KanbanCardProvider.title!.trim().isNotEmpty && KanbanCardProvider.cardState!=null) {
+              onPressed: () {
+                if (KanbanCardProvider.kanbanCardGlobalKey.currentState!
+                        .validate() &&
+                    KanbanCardProvider.title != null &&
+                    KanbanCardProvider.title!.trim().isNotEmpty &&
+                    KanbanCardProvider.cardState != null) {
                   showDialog(
                       context: context,
                       builder: (BuildContext context) =>
                           _ModifyKanbanCardDialog());
                 }
-
-
               },
               child: const Text('OK',
                   style: TextStyle(
@@ -111,13 +116,14 @@ class _KanbanFormState extends State<_KanbanForm> {
   @override
   void initState() {
     super.initState();
-    if (widget.kanbanCard != null) {
+    if (!KanbanCardProvider.isNewKanbanCard) {
       KanbanCardProvider.initProvider(widget.kanbanCard!);
       titleController.text = widget.kanbanCard!.title;
       descriptionController.text = widget.kanbanCard!.description ?? '';
       stateDropdownValue = widget.kanbanCard!.cardState.name;
       priorityDropdownValue = widget.kanbanCard!.priority.name;
       newTask = false;
+      if (widget.kanbanCard!.private == 'false') private = false;
       if (widget.kanbanCard!.private == 'true') private = true;
       asignedUser = widget.kanbanCard!.userAsigned.name;
       if (widget.kanbanCard!.teamAsigned != null) {
@@ -128,9 +134,10 @@ class _KanbanFormState extends State<_KanbanForm> {
       }
     } else {
       stateDropdownValue = widget.cardState!.name;
-      KanbanCardProvider.private=private.toString();
-    
-  
+      KanbanCardProvider.private = private.toString();
+      KanbanCardProvider.cardState=cardState;
+      Random rnd = Random();
+      KanbanCardProvider.cardColor= kanbanColors[rnd.nextInt(kanbanColors.length)];
     }
   }
 
@@ -146,12 +153,12 @@ class _KanbanFormState extends State<_KanbanForm> {
     final boardProvider = Provider.of<BoardProvider>(context, listen: false);
 
     // final _cardFormKey = GlobalKey<FormState>();
-    if(widget.kanbanCard==null){
-      asignedUser=boardProvider.currentUser!.name;
-       KanbanCardProvider.userAsigned=boardProvider.currentUser;
-       KanbanCardProvider.creator=boardProvider.currentUser;
-      KanbanCardProvider.priority=boardProvider.getDefaultPriority();
-      KanbanCardProvider.creationDate=DateTime.now();
+    if (widget.kanbanCard == null) {
+      asignedUser = boardProvider.currentUser!.name;
+      KanbanCardProvider.userAsigned = boardProvider.currentUser;
+      KanbanCardProvider.creator = boardProvider.currentUser;
+      KanbanCardProvider.priority = boardProvider.getDefaultPriority();
+      KanbanCardProvider.creationDate = DateTime.now();
     }
 
     List<DropdownMenuItem<String>> buildStateDropdown() {
@@ -186,7 +193,13 @@ class _KanbanFormState extends State<_KanbanForm> {
                     hintText: 'Descripción tarea.',
                     labelText:
                         'Ingresa una breve descripción de la tarea (max 100).',
-                    controller: titleController),
+                    controller: titleController,
+                    onTap: (){
+                      titleController.text='';
+                      KanbanCardProvider.title='';
+                    },
+                    
+                    ),
                 onChanged: (value) {
                   KanbanCardProvider.title = value;
                 },
@@ -205,10 +218,14 @@ class _KanbanFormState extends State<_KanbanForm> {
                 decoration: CustomInputDecoration(
                     hintText: 'Comentarios.',
                     labelText: 'Añade comentarios sobre la tarea.',
-                    controller: descriptionController),
-                    onChanged: (value){
-                      KanbanCardProvider.title=value;
-                    },
+                    controller: descriptionController,
+                                        onTap: (){
+                      descriptionController.text='';
+                      KanbanCardProvider.description='';
+                    },),
+                onChanged: (value) {
+                  KanbanCardProvider.description = value;
+                },
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -222,7 +239,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                       onChanged: (newValue) => setState(
                         () {
                           private = newValue;
-                          KanbanCardProvider.private=newValue.toString();
+                          KanbanCardProvider.private = newValue.toString();
                         },
                       ),
                     ),
@@ -251,8 +268,9 @@ class _KanbanFormState extends State<_KanbanForm> {
                           onChanged: (String? newValue) {
                             setState(() {
                               stateDropdownValue = newValue!;
-                              KanbanCardProvider.cardState=boardProvider.getCardStateFromName(newValue);
-                              KanbanCardProvider.stateDate=DateTime.now();
+                              KanbanCardProvider.cardState =
+                                  boardProvider.getCardStateFromName(newValue);
+                              KanbanCardProvider.stateDate = DateTime.now();
                             });
                           },
                           items: buildStateDropdown(),
@@ -284,7 +302,8 @@ class _KanbanFormState extends State<_KanbanForm> {
                       onChanged: (String? newValue) {
                         setState(() {
                           priorityDropdownValue = newValue!;
-                          KanbanCardProvider.priority=boardProvider.getPriorityFromName(newValue);
+                          KanbanCardProvider.priority =
+                              boardProvider.getPriorityFromName(newValue);
                         });
                       },
                       items: boardProvider.listPriorities
@@ -352,7 +371,8 @@ class _KanbanFormState extends State<_KanbanForm> {
                                 onTap: () {
                                   boardProvider.backgroundKanbanColor =
                                       kanbanColors[index];
-                                      KanbanCardProvider.cardColor=kanbanColors[index];
+                                  KanbanCardProvider.cardColor =
+                                      kanbanColors[index];
                                 },
                                 child: Container(
                                   width: 32,
@@ -388,7 +408,8 @@ class _KanbanFormState extends State<_KanbanForm> {
                     onChanged: (String? newValue) {
                       setState(() {
                         asignedUser = newValue!;
-                        KanbanCardProvider.userAsigned=boardProvider.getUserFromName(newValue);
+                        KanbanCardProvider.userAsigned =
+                            boardProvider.getUserFromName(newValue);
                       });
                     },
                     items: boardProvider.listUsers
@@ -424,7 +445,8 @@ class _KanbanFormState extends State<_KanbanForm> {
                     onChanged: (String? newValue) {
                       setState(() {
                         asignedTeam = newValue!;
-                        KanbanCardProvider.teamAsigned=boardProvider.getTeamFromName(newValue);
+                        KanbanCardProvider.teamAsigned =
+                            boardProvider.getTeamFromName(newValue);
                       });
                     },
                     items: [
@@ -438,8 +460,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                         );
                       }).toList()
                     ],
-              
-                ),
+                  ),
                 ],
               ),
               const SizedBox(height: 15),
@@ -485,34 +506,11 @@ class _KanbanFormState extends State<_KanbanForm> {
     if (selected != null && selected != selectedDate) {
       setState(() {
         selectedDate = selected;
-        KanbanCardProvider.expirationDate= selected;
+        KanbanCardProvider.expirationDate = selected;
       });
     }
   }
 }
-//   @override
-//   Widget build(BuildContext context) {
-//     return AlertDialog(
-//       title: Text('AlertDialog Title'),
-//       content: SingleChildScrollView(
-//         child: ListBody(
-//           children: <Widget>[
-//             Text(kanbanCard.title),
-//             Text('Would you like to approve of this message?'),
-//           ],
-//         ),
-//       ),
-//       actions: <Widget>[
-//         TextButton(
-//           child: const Text('Approve'),
-//           onPressed: () {
-//             Navigator.of(context).pop();
-//           },
-//         ),
-//       ],
-//     );
-//   }
-// }
 
 class _DeleteKanbanCardDialog extends StatelessWidget {
   final KanbanCard? kanbanCard;
@@ -558,12 +556,12 @@ class _ModifyKanbanCardDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final boardProvider = Provider.of<BoardProvider>(context, listen: false);
     return AlertDialog(
-      title: (KanbanCardProvider.isNewKanbanCard)?
-      const Text('Añadir tarea')
-      : const Text('Modificar tarea'),
+      title: (KanbanCardProvider.isNewKanbanCard)
+          ? const Text('Añadir tarea')
+          : const Text('Modificar tarea'),
       content: (KanbanCardProvider.isNewKanbanCard)
-      ? Text('¿Añadir tarea: ${KanbanCardProvider.title}')
-      : Text ('¿Modificar la tarea: ${KanbanCardProvider.title}'),
+          ? Text('¿Añadir tarea: ${KanbanCardProvider.title}')
+          : Text('¿Modificar la tarea: ${KanbanCardProvider.title}'),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -571,27 +569,28 @@ class _ModifyKanbanCardDialog extends StatelessWidget {
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         ),
-TextButton(
+        TextButton(
           child: const Text('OK',
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
           onPressed: () {
-           
-           KanbanCardProvider.position=boardProvider.getKanbanCardsFromStatus(KanbanCardProvider.cardState!, false).length;
+            KanbanCardProvider.position = boardProvider
+                .getKanbanCardsFromStatus(KanbanCardProvider.cardState!, false)
+                .length;
 
-          (KanbanCardProvider.isNewKanbanCard) ?
-          boardProvider.addKanbanCard(KanbanCardProvider.getKanbanCard())
-          :boardProvider.updateKanbanCard(KanbanCardProvider.getKanbanCard());
+            (KanbanCardProvider.isNewKanbanCard)
+                ? boardProvider
+                    .addKanbanCard(KanbanCardProvider.getKanbanCard())
+                : boardProvider
+                    .updateKanbanCard(KanbanCardProvider.getKanbanCard());
 
-          KanbanCardProvider.isNewKanbanCard=true;
+            KanbanCardProvider.isNewKanbanCard = true;
             Navigator.of(context)
               ..pop()
               ..pop();
           },
         ),
-
       ],
-
     );
   }
 }

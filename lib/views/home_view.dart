@@ -173,6 +173,7 @@ class _StateColumnState extends State<_StateColumn> {
                             context: context,
                             builder: (BuildContext context) => KanbanCardDialog(
                                   cardStateDefault: widget.cardState,
+                                  newCard: true,
                                 ));
                       },
                       child: const Text(

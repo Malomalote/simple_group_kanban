@@ -19,7 +19,7 @@ class KanbanCardWidget extends StatelessWidget {
             context: context,
             builder: (BuildContext context) {
               boardProvider.backgroundKanbanColor=kanbanCard.cardColor;
-              return  KanbanCardDialog(kanbanCard: kanbanCard);}
+              return  KanbanCardDialog(kanbanCard: kanbanCard,newCard: false,);}
                 
                 );
       },

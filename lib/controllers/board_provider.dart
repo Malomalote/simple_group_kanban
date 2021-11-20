@@ -143,7 +143,7 @@ class BoardProvider with ChangeNotifier {
   }
 
   void addKanbanCard(KanbanCard kanbanCard){
-    CardsQueries.insertKanbanCard(kanbanCard);
+   print( CardsQueries.insertKanbanCard(kanbanCard));
     notifyListeners();
   }
   void updateKanbanCard(KanbanCard kanbanCard){
