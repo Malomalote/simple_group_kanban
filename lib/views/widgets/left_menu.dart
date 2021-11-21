@@ -96,30 +96,30 @@ class _AdminMenu extends StatelessWidget {
             },
           ),
           Divider(),
-          _MenuItem(
-            icon: Icons.group_add,
-            text: 'Añadir Equipo',
-            onPressed: () {
-              print('añadir equipo');
-            },
-          ),
-          _MenuItem(
-            icon: FontAwesomeIcons.usersCog,
-            font: 'FaIcon',
-            text: 'Editar Equipo',
-            onPressed: () {
-              print('editar equipo');
-            },
-          ),
-          _MenuItem(
-            icon: FontAwesomeIcons.usersSlash,
-            font: 'FaIcon',
-            text: 'Borrar Equipo',
-            onPressed: () {
-              print('borrar equipo');
-            },
-          ),
-          Divider(),
+          // _MenuItem(
+          //   icon: Icons.group_add,
+          //   text: 'Añadir Equipo',
+          //   onPressed: () {
+          //     print('añadir equipo');
+          //   },
+          // ),
+          // _MenuItem(
+          //   icon: FontAwesomeIcons.usersCog,
+          //   font: 'FaIcon',
+          //   text: 'Editar Equipo',
+          //   onPressed: () {
+          //     print('editar equipo');
+          //   },
+          // ),
+          // _MenuItem(
+          //   icon: FontAwesomeIcons.usersSlash,
+          //   font: 'FaIcon',
+          //   text: 'Borrar Equipo',
+          //   onPressed: () {
+          //     print('borrar equipo');
+          //   },
+          // ),
+          // Divider(),
         ],
       ),
     );

@@ -436,7 +436,8 @@ class _KanbanFormState extends State<_KanbanForm> {
                         .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
-                        child: Text(value),
+                        child: //Text(value),
+                        _StateDropdownItem(value: value),
                       );
                     }).toList(),
                   ),
@@ -475,7 +476,8 @@ class _KanbanFormState extends State<_KanbanForm> {
                           .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value),
+                          child: //Text(value),
+                          _StateDropdownItem(value: value),
                         );
                       }).toList()
                     ],
