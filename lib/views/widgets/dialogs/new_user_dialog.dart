@@ -9,11 +9,14 @@ class NewUserDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final boardProvider = Provider.of<BoardProvider>(context, listen: false);
+    UsersProvider.rol =
+        boardProvider.getRolFromName(boardProvider.listRol[0].name);
     return AlertDialog(
       contentPadding: const EdgeInsets.all(8),
       buttonPadding: const EdgeInsets.all(15),
-      title: CustomAlertTitle(title: 'Añadir un nuevo usuario'),
-      content: _NewUserForm(),
+      title: const CustomAlertTitle(title: 'Añadir un nuevo usuario'),
+      content: const _NewUserForm(),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -23,17 +26,16 @@ class NewUserDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            //TODO: Falta acciones para guardar en base de datos
-            // if (CardStateProvider.stateGlobalKey.currentState!.validate() &&
-            //     CardStateProvider.nameState.isNotEmpty) {
-            //   showDialog(
-            //       context: context,
-            //       builder: (BuildContext context) =>
-            //           _ModifyStateDialog(cardState: cardState));
-            // }
+            if (UsersProvider.userGlobalKey.currentState!.validate() &&
+                UsersProvider.systemName != null &&
+                UsersProvider.systemName!.isNotEmpty &&
+                UsersProvider.name != null &&
+                UsersProvider.name!.isNotEmpty) {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => const _AddUserDialog());
+            }
           },
-
-          //  () => Navigator.pop(context, 'OK'),
           child: const Text('OK',
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
@@ -63,7 +65,7 @@ class _NewUserFormState extends State<_NewUserForm> {
 
   @override
   Widget build(BuildContext context) {
-    final boardProvider = Provider.of<BoardProvider>(context);
+    final boardProvider = Provider.of<BoardProvider>(context, listen: false);
     final listSystemUsersName = boardProvider.listUsers
         .map((e) => e.systemName.trim().toLowerCase())
         .toList();
@@ -72,11 +74,11 @@ class _NewUserFormState extends State<_NewUserForm> {
         .toList();
 
     final listRol = boardProvider.listRol.map((e) => e.name).toList();
-    String rolDropDownValue = listRol[0];
+    String rolDropDownValue = UsersProvider.rol!.name;
 
     return SingleChildScrollView(
       child: SizedBox(
-        width: 300,
+        width: 400,
         child: Form(
           key: UsersProvider.userGlobalKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -108,8 +110,8 @@ class _NewUserFormState extends State<_NewUserForm> {
                       systemNameController.text.trim().toLowerCase())) {
                     return 'El usuario ya existe';
                   }
-                  if (nameController.text.isEmpty ||
-                      nameController.text.length > 40) {
+                  if (systemNameController.text.isEmpty ||
+                      systemNameController.text.length > 40) {
                     return 'Debe contener entre 1 y 40 caracteres';
                   }
                 },
@@ -127,14 +129,14 @@ class _NewUserFormState extends State<_NewUserForm> {
                             child: Icon(Icons.clear_rounded,
                                 color: Colors.grey, size: 14)),
                         onTap: () {
-                          systemNameController.text = '';
-                          UsersProvider.systemName = '';
+                          nameController.text = '';
+                          UsersProvider.name = '';
                         }),
                     labelText:
                         'Este es el nombre que se mostrará en la aplicación (max 40).',
                     hintStyle: const TextStyle(fontSize: 10)),
                 onChanged: (value) {
-                  UsersProvider.systemName = value;
+                  UsersProvider.name = value;
                 },
                 validator: (_) {
                   if (listUsersName
@@ -153,7 +155,12 @@ class _NewUserFormState extends State<_NewUserForm> {
                 iconSize: 20,
                 elevation: 16,
                 underline: Container(height: 1, color: Colors.deepPurpleAccent),
-                onChanged: (String? newValue) {},
+                onChanged: (String? newValue) {
+                  setState(() {
+                    rolDropDownValue = newValue!;
+                    UsersProvider.rol = boardProvider.getRolFromName(newValue);
+                  });
+                },
                 items: listRol
                     .map((e) => e)
                     .map<DropdownMenuItem<String>>((value) {
@@ -165,6 +172,54 @@ class _NewUserFormState extends State<_NewUserForm> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AddUserDialog extends StatelessWidget {
+  const _AddUserDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final boardProvider = Provider.of<BoardProvider>(context, listen: false);
+    return Center(
+      child: SingleChildScrollView(
+        child: AlertDialog(
+          title: const CustomAlertTitle(title: 'Añadir Usuario '),
+          content: Column(
+            children: [
+              const Text('Se va a añadir el Usuario:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(UsersProvider.name!),
+              const Text('Usuario para autenticación:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(UsersProvider.systemName!),
+              const Text('Perfil:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(UsersProvider.rol!.name),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Cancel'),
+              child: const Text('Cancel',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
+            ),
+            TextButton(
+              child: const Text('OK',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
+              onPressed: () {
+                boardProvider.insertUser(UsersProvider.getUser());
+                Navigator.of(context)
+                  ..pop()
+                  ..pop();
+              },
+            ),
+          ],
         ),
       ),
     );

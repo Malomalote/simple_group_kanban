@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
-import 'package:simple_kanban/views/widgets/kanban_card_dialog.dart';
+import 'package:simple_kanban/views/widgets/dialogs/kanban_card_dialog.dart';
 
 class KanbanCardWidget extends StatelessWidget {
   final KanbanCard kanbanCard;

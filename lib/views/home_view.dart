@@ -10,10 +10,11 @@ import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/utils/data_generator.dart';
 import 'package:simple_kanban/utils/utils.dart';
-import 'package:simple_kanban/views/widgets/kanban_card_dialog.dart';
+import 'package:simple_kanban/views/widgets/dialogs/kanban_card_dialog.dart';
+import 'package:simple_kanban/views/widgets/dialogs/state_card_dialog.dart';
 import 'package:simple_kanban/views/widgets/kanban_card_widget.dart';
 import 'package:simple_kanban/views/widgets/left_menu.dart';
-import 'package:simple_kanban/views/widgets/state_card_dialog.dart';
+
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);

@@ -67,18 +67,20 @@ class RolQueries {
     db.dispose();
     return _rowToRol(result.first);
   }
-  static Rol? getRolFromName(String name) {
+  static Rol getRolFromName(String name) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
 
     sqlite.ResultSet result = db.select('select * from rol where name="$name"');
 
     for (var r in result) {
+    
       db.dispose();
       return _rowToRol(r);
     }
+    result = db.select('select * from rol');
 
     db.dispose();
-    return null;
+    return _rowToRol(result.first);
   }
 
   static Rol _rowToRol(sqlite.Row r) {

@@ -163,6 +163,47 @@ class CardsQueries {
     return kanbanCards;
   }
 
+
+  static void updateColor(String id, Color color) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query =
+        'update kanban_card set card_color=${Utils.colorToInt(color)} where card_id="$id"';
+    db.execute(query);
+    db.dispose();
+  }
+
+  static void updatePosition(String id, int newPosition) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query =
+        'update kanban_card set position=$newPosition where card_id="$id"';
+    db.execute(query);
+    db.dispose();
+  }
+  static void updateState(String id, String idNewState) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query =
+        'update kanban_card set card_state="$idNewState" where card_id="$id"';
+    db.execute(query);
+    
+    db.dispose();
+  }
+  static void deleteCard(String id){
+        sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query =
+        'DELETE FROM kanban_card where card_id="$id"';
+    db.execute(query);
+    db.dispose();
+  }
+  static void deleteCardsFromUser(String id){
+        sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query =
+        'DELETE FROM kanban_card where user_asigned="$id"';
+    db.execute(query);
+    db.dispose();
+  }
+
+
+  
   static KanbanCard? _rowToKanbanCard(sqlite.Row r) {
     String cardId = r['card_id'];
 
@@ -203,36 +244,5 @@ class CardsQueries {
         private: private,
         cardColor: cardColor,
         position: position);
-  }
-
-  static void updateColor(String id, Color color) {
-    sqlite.Database db = sqlite.sqlite3.open(finalPath);
-    String query =
-        'update kanban_card set card_color=${Utils.colorToInt(color)} where card_id="$id"';
-    db.execute(query);
-    db.dispose();
-  }
-
-  static void updatePosition(String id, int newPosition) {
-    sqlite.Database db = sqlite.sqlite3.open(finalPath);
-    String query =
-        'update kanban_card set position=$newPosition where card_id="$id"';
-    db.execute(query);
-    db.dispose();
-  }
-  static void updateState(String id, String idNewState) {
-    sqlite.Database db = sqlite.sqlite3.open(finalPath);
-    String query =
-        'update kanban_card set card_state="$idNewState" where card_id="$id"';
-    db.execute(query);
-    
-    db.dispose();
-  }
-  static void deleteCard(String id){
-        sqlite.Database db = sqlite.sqlite3.open(finalPath);
-    String query =
-        'DELETE FROM kanban_card where card_id="$id"';
-    db.execute(query);
-    db.dispose();
   }
 }

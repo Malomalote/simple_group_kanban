@@ -16,7 +16,7 @@ import 'package:simple_kanban/models/user.dart';
 
 class BoardProvider with ChangeNotifier {
   User? currentUser;
-  String currentUserRol = 'Usuario';
+  late String currentUserRol;
   List<CardState> listCardState = [];
   late List<Priority> listPriorities;
   late List<User> listUsers;
@@ -40,6 +40,8 @@ class BoardProvider with ChangeNotifier {
     if (currentUser != null) {
       final rol = RolQueries.getRol(currentUser!.rol.rolId);
       currentUserRol = rol.name;
+    } else {
+      currentUserRol=listRol[0].name;
     }
   }
 
@@ -146,8 +148,7 @@ class BoardProvider with ChangeNotifier {
   }
 
   void addKanbanCard(KanbanCard kanbanCard){
-    print(kanbanCard);
-   print( CardsQueries.insertKanbanCard(kanbanCard));
+    CardsQueries.insertKanbanCard(kanbanCard);
     notifyListeners();
   }
   void updateKanbanCard(KanbanCard kanbanCard){
@@ -155,9 +156,26 @@ class BoardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Rol? getRolFromName(name){
-    RolQueries.getRolFromName(name);
+  Rol getRolFromName(String name){
+    return RolQueries.getRolFromName(name);
     
+
+  }
+  void insertUser(User newUser){
+    UsersQueries.insertUser(newUser);
+    notifyListeners();
+  }
+  void updateUser(User newUser){
+    UsersQueries.updateUser(newUser);
+    notifyListeners();
+  }
+  void deleteUser(User newUser){
+
+
+    CardsQueries.deleteCardsFromUser(newUser.userId);
+    UsersQueries.deleteUser(newUser);
+
+    notifyListeners();
   }
   
 }

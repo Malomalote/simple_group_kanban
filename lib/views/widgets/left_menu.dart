@@ -5,8 +5,10 @@ import 'package:provider/provider.dart';
 
 import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/controllers/menu_provider.dart';
-import 'package:simple_kanban/views/widgets/new_user_dialog.dart';
-import 'package:simple_kanban/views/widgets/state_card_dialog.dart';
+import 'package:simple_kanban/views/widgets/dialogs/delete_user_dialog.dart';
+import 'package:simple_kanban/views/widgets/dialogs/new_user_dialog.dart';
+import 'package:simple_kanban/views/widgets/dialogs/state_card_dialog.dart';
+import 'package:simple_kanban/views/widgets/dialogs/update_user_dialog.dart';
 
 class LeftMenu extends StatelessWidget {
   const LeftMenu({Key? key}) : super(key: key);
@@ -46,7 +48,7 @@ class LeftMenu extends StatelessWidget {
             text: 'About...',
             font: 'FaIcon',
             onPressed: () {
-              print('mostrar datos de desarrollador');
+              showDialog(context: context, builder: (_) => const AboutDialog());
             },
           ),
         ],
@@ -67,23 +69,29 @@ class _AdminMenu extends StatelessWidget {
             icon: Icons.person_add,
             text: 'Añadir Usuario',
             onPressed: () {
-                           showDialog(
-                  context: context,
-                  builder: (BuildContext context) => const NewUserDialog());
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => const NewUserDialog(),
+              );
             },
           ),
           _MenuItem(
             icon: Icons.manage_accounts,
             text: 'Editar Usuario',
             onPressed: () {
-              print('editar usuario');
-            },
+                            showDialog(
+                context: context,
+                builder: (BuildContext context) => const UpdateUserDialog(),
+              );
+            }
+            
+  
           ),
           _MenuItem(
             icon: Icons.person_off,
             text: 'Borrar Usuario',
             onPressed: () {
-              print('borrar usuario');
+              showDialog(context: context, builder: (_) => const DeleteUserDialog());
             },
           ),
           Divider(),

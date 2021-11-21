@@ -8,7 +8,7 @@ import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/utils/extensions.dart';
 import 'package:simple_kanban/utils/utils.dart';
 import 'package:simple_kanban/views/widgets/custom_alert_title.dart';
-import 'package:simple_kanban/views/widgets/custom_input_decoration.dart';
+
 
 class StateCardDialog extends StatelessWidget {
   final CardState? cardState;

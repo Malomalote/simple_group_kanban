@@ -30,6 +30,13 @@ class UsersQueries {
     return -1;
   }
 
+    static void deleteUser(User user) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query = 'DELETE FROM user where user_id="${user.userId}"';
+    db.execute(query);
+    db.dispose();
+  }
+
   static List<User> getAllUsers() {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
 
@@ -88,6 +95,13 @@ class UsersQueries {
 
     db.dispose();
     return null;
+  }
+
+  static void updateUser(User user){
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query = 'update user set name="${user.name}", system_name="${user.systemName}", rol="${user.rol.rolId}" where user_id="${user.userId}"';
+    db.execute(query);
+    db.dispose();
   }
 
   static User _rowToUser(sqlite.Row r) {

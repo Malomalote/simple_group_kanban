@@ -5,7 +5,6 @@ import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/models/priority.dart';
 import 'package:simple_kanban/models/team.dart';
 import 'package:simple_kanban/models/user.dart';
-import 'package:simple_kanban/utils/utils.dart';
 
 class KanbanCardProvider {
   static GlobalKey<FormState> kanbanCardGlobalKey = GlobalKey<FormState>();
@@ -50,8 +49,9 @@ class KanbanCardProvider {
     if (isNewKanbanCard) {
       Nuid nuid = Nuid.instance;
       newId = nuid.next();
-    } else
+    } else {
       newId = cardId;
+    }
 
     KanbanCard kanbanCard = KanbanCard(
         cardId: newId!,
