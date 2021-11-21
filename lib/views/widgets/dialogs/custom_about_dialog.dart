@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:simple_kanban/views/widgets/custom_alert_title.dart';
 
-class AboutDialog extends StatelessWidget {
-  const AboutDialog({Key? key}) : super(key: key);
+class CustomAboutDialog extends StatelessWidget {
+  const CustomAboutDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      
             contentPadding: const EdgeInsets.all(8),
       buttonPadding: const EdgeInsets.all(15),
       title: const CustomAlertTitle(title: 'Acerca de Simple Kanban'),
@@ -30,12 +31,18 @@ class _AboutContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text('Versión 0.1'),
-        Text('Autor: Antonio M. García Gómez'),
-        Text('Contacto: antoniomigueldev@gmail.com'),
-      ],
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          children: [
+            Text('Versión 0.1'),
+            SizedBox(height: 5),
+            Text('Licencia MIT'),SizedBox(height: 5),
+            Text('Autor: Antonio M. García Gómez'),SizedBox(height: 5),
+            Text('Contacto: antoniomigueldev@gmail.com'),SizedBox(height: 5),
+          ],
+        ),
+      ),
     );
   }
 }

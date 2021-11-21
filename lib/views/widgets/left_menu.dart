@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/controllers/menu_provider.dart';
+import 'package:simple_kanban/views/widgets/dialogs/custom_about_dialog.dart';
 import 'package:simple_kanban/views/widgets/dialogs/delete_user_dialog.dart';
 import 'package:simple_kanban/views/widgets/dialogs/new_user_dialog.dart';
 import 'package:simple_kanban/views/widgets/dialogs/state_card_dialog.dart';
@@ -48,7 +49,7 @@ class LeftMenu extends StatelessWidget {
             text: 'About...',
             font: 'FaIcon',
             onPressed: () {
-              showDialog(context: context, builder: (_) => const AboutDialog());
+              showDialog(context: context, builder: (_) => const CustomAboutDialog());
             },
           ),
         ],
