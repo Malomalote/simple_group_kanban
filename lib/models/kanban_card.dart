@@ -70,4 +70,9 @@ class KanbanCard {
       position: position ?? this.position,
     );
   }
+
+  @override
+  String toString() {
+    return 'KanbanCard(cardId: $cardId, creator: ${creator.userId}, creationDate: $creationDate, userAsigned: ${userAsigned.userId}, teamAsigned: $teamAsigned, cardState: $cardState, stateDate: $stateDate, priority: ${priority.priorityId}, title: $title, description: $description, expirationDate: $expirationDate, private: $private, cardColor: $cardColor, position: $position)';
+  }
 }

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collapsible_sidebar/collapsible_sidebar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +9,11 @@ import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/utils/data_generator.dart';
+import 'package:simple_kanban/utils/utils.dart';
 import 'package:simple_kanban/views/widgets/kanban_card_dialog.dart';
 import 'package:simple_kanban/views/widgets/kanban_card_widget.dart';
 import 'package:simple_kanban/views/widgets/left_menu.dart';
 import 'package:simple_kanban/views/widgets/state_card_dialog.dart';
-
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -94,24 +96,22 @@ class _StateColumnState extends State<_StateColumn> {
       cardsList = boardProvider.listKanbanCard[widget.cardState.position];
     });
 
-    return
-
-        //  (cardsList.isEmpty)
-        //     ? const CircularProgressIndicator()
-        //     :
-
-        SizedBox(
+    return SizedBox(
       width: 300,
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            // mainAxisAlignment: MainAxisAlignment.center,
+            // crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Spacer(),
-              FittedBox(
-                fit: BoxFit.fill,
+              Container(
+                width: 250,
                 child: Text(
                   widget.cardState.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
@@ -170,11 +170,17 @@ class _StateColumnState extends State<_StateColumn> {
                   InkWell(
                       onTap: () {
                         showDialog(
-                            context: context,
-                            builder: (BuildContext context) => KanbanCardDialog(
-                                  cardStateDefault: widget.cardState,
-                                  newCard: true,
-                                ));
+                          context: context,
+                          builder: (BuildContext context) {
+                            Random rnd = Random();
+                            boardProvider.backgroundKanbanColor =
+                                kanbanColors[rnd.nextInt(kanbanColors.length)];
+                            return KanbanCardDialog(
+                              cardStateDefault: widget.cardState,
+                              newCard: true,
+                            );
+                          },
+                        );
                       },
                       child: const Text(
                         '+',

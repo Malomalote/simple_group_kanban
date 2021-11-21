@@ -10,6 +10,7 @@ import 'package:simple_kanban/db/users_queries.dart';
 import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/models/priority.dart';
+import 'package:simple_kanban/models/rol.dart';
 import 'package:simple_kanban/models/team.dart';
 import 'package:simple_kanban/models/user.dart';
 
@@ -20,6 +21,7 @@ class BoardProvider with ChangeNotifier {
   late List<Priority> listPriorities;
   late List<User> listUsers;
   late List<Team> listTeams;
+  late List<Rol> listRol;
   List<List<KanbanCard>> listKanbanCard = [];
 
   Future<void> initBoard() async {
@@ -32,6 +34,7 @@ class BoardProvider with ChangeNotifier {
     listPriorities = PrioritiesQueries.getAllPriorities();
     listUsers = UsersQueries.getAllUsers();
     listTeams = TeamsQueries.getAllTeam();
+    listRol=RolQueries.getAllRol();
     final username = Platform.environment['USERNAME'];
     currentUser = UsersQueries.getUserFromSystemName(username);
     if (currentUser != null) {
@@ -143,6 +146,7 @@ class BoardProvider with ChangeNotifier {
   }
 
   void addKanbanCard(KanbanCard kanbanCard){
+    print(kanbanCard);
    print( CardsQueries.insertKanbanCard(kanbanCard));
     notifyListeners();
   }
@@ -151,5 +155,9 @@ class BoardProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Rol? getRolFromName(name){
+    RolQueries.getRolFromName(name);
+    
+  }
   
 }

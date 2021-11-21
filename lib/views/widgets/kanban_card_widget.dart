@@ -12,16 +12,18 @@ class KanbanCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final boardProvider=Provider.of<BoardProvider>(context,listen: false);
+    final boardProvider = Provider.of<BoardProvider>(context, listen: false);
     return GestureDetector(
       onTap: () {
         showDialog(
             context: context,
             builder: (BuildContext context) {
-              boardProvider.backgroundKanbanColor=kanbanCard.cardColor;
-              return  KanbanCardDialog(kanbanCard: kanbanCard,newCard: false,);}
-                
-                );
+              boardProvider.backgroundKanbanColor = kanbanCard.cardColor;
+              return KanbanCardDialog(
+                kanbanCard: kanbanCard,
+                newCard: false,
+              );
+            });
       },
       child: Container(
         width: double.infinity,
@@ -64,15 +66,13 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(Icons.arrow_back, size: 16),
         Container(
-            alignment: Alignment.topLeft,
+            alignment: Alignment.topCenter,
             width: 100,
             height: 5,
             color: kanbanCard.priority.priorityColor),
-        const Icon(Icons.arrow_forward, size: 16),
       ],
     );
   }

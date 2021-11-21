@@ -5,16 +5,15 @@ import 'package:provider/provider.dart';
 
 import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/controllers/menu_provider.dart';
+import 'package:simple_kanban/views/widgets/new_user_dialog.dart';
 import 'package:simple_kanban/views/widgets/state_card_dialog.dart';
 
 class LeftMenu extends StatelessWidget {
-
   const LeftMenu({Key? key}) : super(key: key);
 
-
-  
   @override
-  Widget build(BuildContext context) {final MenuProvider menuProvider=Provider.of<MenuProvider>(context);
+  Widget build(BuildContext context) {
+    final MenuProvider menuProvider = Provider.of<MenuProvider>(context);
     final boardProvider = Provider.of<BoardProvider>(context, listen: false);
     return Container(
       width: menuProvider.menuWidth,
@@ -27,32 +26,29 @@ class LeftMenu extends StatelessWidget {
           GestureDetector(
             child: const Icon(Icons.menu_open),
             onTap: () {
-              
-
-                menuProvider.switchMenu();
-     
+              menuProvider.switchMenu();
             },
           ),
           if (boardProvider.currentUserRol == 'Administrador')
             const _AdminMenu(),
           _MenuItem(
-              icon: Icons.auto_awesome_motion,
-              text: 'Añadir Categoría',
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) => const StateCardDialog());
-              },),
-              Divider(),
-              _MenuItem(
-                icon: FontAwesomeIcons.question,
-                text: 'About...',
-                font: 'FaIcon',
-                onPressed: (){
-                  print('mostrar datos de desarrollador');
-                },
-                
-                ),
+            icon: Icons.auto_awesome_motion,
+            text: 'Añadir Categoría',
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => const StateCardDialog());
+            },
+          ),
+          Divider(),
+          _MenuItem(
+            icon: FontAwesomeIcons.question,
+            text: 'About...',
+            font: 'FaIcon',
+            onPressed: () {
+              print('mostrar datos de desarrollador');
+            },
+          ),
         ],
       ),
     );
@@ -67,12 +63,13 @@ class _AdminMenu extends StatelessWidget {
     return Container(
       child: Column(
         children: [
-          
           _MenuItem(
             icon: Icons.person_add,
             text: 'Añadir Usuario',
             onPressed: () {
-              print('añadir usuario');
+                           showDialog(
+                  context: context,
+                  builder: (BuildContext context) => const NewUserDialog());
             },
           ),
           _MenuItem(
@@ -113,8 +110,7 @@ class _AdminMenu extends StatelessWidget {
               print('borrar equipo');
             },
           ),
-           Divider(),
-
+          Divider(),
         ],
       ),
     );
@@ -142,7 +138,7 @@ class _MenuItemState extends State<_MenuItem> {
   Color backgroundColor = Colors.white;
   @override
   Widget build(BuildContext context) {
-    final MenuProvider menuProvider=Provider.of<MenuProvider>(context);
+    final MenuProvider menuProvider = Provider.of<MenuProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: MouseRegion(
@@ -159,7 +155,8 @@ class _MenuItemState extends State<_MenuItem> {
                   textStyle: const TextStyle(fontSize: 15, color: Colors.white),
                   height: 40,
                   message: (!menuProvider.expand) ? widget.text : '',
-                  child: Icon(widget.icon,size: (widget.font!=null)? 20: 25),
+                  child:
+                      Icon(widget.icon, size: (widget.font != null) ? 20 : 25),
                 ),
                 const SizedBox(width: 10),
                 if (menuProvider.expand)

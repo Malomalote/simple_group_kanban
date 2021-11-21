@@ -7,6 +7,7 @@ import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/utils/extensions.dart';
 import 'package:simple_kanban/utils/utils.dart';
+import 'package:simple_kanban/views/widgets/custom_alert_title.dart';
 import 'package:simple_kanban/views/widgets/custom_input_decoration.dart';
 
 class StateCardDialog extends StatelessWidget {
@@ -20,25 +21,29 @@ class StateCardDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     if (cardState == null) CardStateProvider.newcardState = true;
     return AlertDialog(
+      title: (cardState == null)
+          ? CustomAlertTitle(title: 'Añadir Categoría')
+          : CustomAlertTitle(title: 'Modificar Categoría'),
+        
       contentPadding: const EdgeInsets.all(8),
       buttonPadding: const EdgeInsets.all(15),
       content: _StateForm(cardState: cardState),
       actions: <Widget>[
         Row(
           children: [
-            if(cardState!=null) TextButton(
-                onPressed: () {
-        
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          _DeleteDialog(cardState: cardState));
-                },
-                child: const Text(
-                  'Eliminar Categoría',
-                  style:
-                      const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                )),
+            if (cardState != null)
+              TextButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            _DeleteDialog(cardState: cardState));
+                  },
+                  child: const Text(
+                    'Eliminar Categoría',
+                    style: const TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                  )),
             const Spacer(),
             TextButton(
               onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -68,6 +73,7 @@ class StateCardDialog extends StatelessWidget {
     );
   }
 }
+
 
 class _StateForm extends StatefulWidget {
   final CardState? cardState;
@@ -118,7 +124,7 @@ class _StateFormState extends State<_StateForm> {
             children: [
               TextFormField(
                 autocorrect: false,
-                maxLength: 100,
+                maxLength: 40,
                 maxLines: null,
                 style: const TextStyle(color: Colors.black, fontSize: 14),
                 controller: nameController,
@@ -134,7 +140,7 @@ class _StateFormState extends State<_StateForm> {
                           CardStateProvider.nameState = '';
                         }),
                     labelText:
-                        'Ingresa una breve descripción de la categoría (max 100).',
+                        'Ingresa una breve descripción de la categoría (max 40).',
                     hintStyle: const TextStyle(fontSize: 10)),
                 onChanged: (value) {
                   CardStateProvider.nameState = value;
@@ -326,10 +332,9 @@ class _KanbanCardsToNewState extends StatelessWidget {
       items: [
         const DropdownMenuItem(value: '', child: Text('')),
         ...listCardState
-            .where((e) => e.name!= cardState.name)
+            .where((e) => e.name != cardState.name)
             .map<DropdownMenuItem<String>>((CardState value) {
-          return 
-           DropdownMenuItem<String>(
+          return DropdownMenuItem<String>(
             value: value.name,
             child: Text(value.name),
           );

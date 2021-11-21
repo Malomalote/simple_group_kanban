@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nuid/nuid.dart';
 import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/models/priority.dart';
@@ -43,10 +44,30 @@ class KanbanCardProvider {
     position = kanbanCard.position;
     isNewKanbanCard = false;
   }
-  static KanbanCard getKanbanCard(){
-    
-    final newId = cardId ?? Utils.newNuid();
-    KanbanCard kanbanCard = KanbanCard(cardId: newId, creator: creator!, creationDate: creationDate!, userAsigned: userAsigned!, cardState: cardState!, stateDate: stateDate!, priority: priority!, title: title!, description: description, private: private!, cardColor: cardColor!, position: position!,expirationDate: expirationDate,teamAsigned: teamAsigned);
+
+  static KanbanCard getKanbanCard() {
+    final String? newId;
+    if (isNewKanbanCard) {
+      Nuid nuid = Nuid.instance;
+      newId = nuid.next();
+    } else
+      newId = cardId;
+
+    KanbanCard kanbanCard = KanbanCard(
+        cardId: newId!,
+        creator: creator!,
+        creationDate: creationDate!,
+        userAsigned: userAsigned!,
+        cardState: cardState!,
+        stateDate: stateDate!,
+        priority: priority!,
+        title: title!,
+        description: description,
+        private: private!,
+        cardColor: cardColor!,
+        position: position!,
+        expirationDate: expirationDate,
+        teamAsigned: teamAsigned);
     return kanbanCard;
   }
 }

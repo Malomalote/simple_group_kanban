@@ -11,6 +11,7 @@ import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/models/priority.dart';
 import 'package:simple_kanban/utils/utils.dart';
+import 'package:simple_kanban/views/widgets/custom_alert_title.dart';
 import 'package:simple_kanban/views/widgets/custom_input_decoration.dart';
 import 'package:simple_kanban/views/widgets/kanban_card_widget.dart';
 
@@ -28,13 +29,18 @@ class KanbanCardDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final boardProvider = Provider.of<BoardProvider>(context);
-    KanbanCardProvider.isNewKanbanCard=newCard;
+    KanbanCardProvider.isNewKanbanCard = newCard;
+
 
     return AlertDialog(
       contentPadding: const EdgeInsets.all(8),
       buttonPadding: const EdgeInsets.all(1),
+            title: (newCard)
+          ? CustomAlertTitle(title: 'Añadir Tarea')
+          : CustomAlertTitle(title: 'Modificar Tarea'),
       backgroundColor: boardProvider.backgroundKanbanColor,
-      content: _KanbanForm(kanbanCard: kanbanCard, cardState: cardStateDefault),
+      content: _KanbanForm(
+          kanbanCard: kanbanCard, cardStateDefault: cardStateDefault),
       actions: <Widget>[
         Row(
           children: [
@@ -88,13 +94,16 @@ class KanbanCardDialog extends StatelessWidget {
   }
 }
 
+
+
+
 class _KanbanForm extends StatefulWidget {
   final KanbanCard? kanbanCard;
-  final CardState? cardState;
+  final CardState? cardStateDefault;
   const _KanbanForm({
     Key? key,
     this.kanbanCard,
-    this.cardState,
+    this.cardStateDefault,
   }) : super(key: key);
 
   @override
@@ -104,7 +113,7 @@ class _KanbanForm extends StatefulWidget {
 class _KanbanFormState extends State<_KanbanForm> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
-  String stateDropdownValue = '';
+
   String priorityDropdownValue = '';
   String asignedUser = '';
   String? asignedTeam;
@@ -118,9 +127,10 @@ class _KanbanFormState extends State<_KanbanForm> {
     super.initState();
     if (!KanbanCardProvider.isNewKanbanCard) {
       KanbanCardProvider.initProvider(widget.kanbanCard!);
+      cardState = widget.kanbanCard!.cardState;
       titleController.text = widget.kanbanCard!.title;
       descriptionController.text = widget.kanbanCard!.description ?? '';
-      stateDropdownValue = widget.kanbanCard!.cardState.name;
+
       priorityDropdownValue = widget.kanbanCard!.priority.name;
       newTask = false;
       if (widget.kanbanCard!.private == 'false') private = false;
@@ -133,11 +143,11 @@ class _KanbanFormState extends State<_KanbanForm> {
         selectedDate = widget.kanbanCard!.expirationDate;
       }
     } else {
-      stateDropdownValue = widget.cardState!.name;
       KanbanCardProvider.private = private.toString();
-      KanbanCardProvider.cardState=cardState;
+      KanbanCardProvider.cardState = widget.cardStateDefault;
       Random rnd = Random();
-      KanbanCardProvider.cardColor= kanbanColors[rnd.nextInt(kanbanColors.length)];
+      KanbanCardProvider.cardColor =
+          kanbanColors[rnd.nextInt(kanbanColors.length)];
     }
   }
 
@@ -152,13 +162,13 @@ class _KanbanFormState extends State<_KanbanForm> {
   Widget build(BuildContext context) {
     final boardProvider = Provider.of<BoardProvider>(context, listen: false);
 
-    // final _cardFormKey = GlobalKey<FormState>();
-    if (widget.kanbanCard == null) {
+    if (KanbanCardProvider.isNewKanbanCard) {
       asignedUser = boardProvider.currentUser!.name;
       KanbanCardProvider.userAsigned = boardProvider.currentUser;
       KanbanCardProvider.creator = boardProvider.currentUser;
       KanbanCardProvider.priority = boardProvider.getDefaultPriority();
       KanbanCardProvider.creationDate = DateTime.now();
+      KanbanCardProvider.stateDate = DateTime.now();
     }
 
     List<DropdownMenuItem<String>> buildStateDropdown() {
@@ -168,13 +178,15 @@ class _KanbanFormState extends State<_KanbanForm> {
           .map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
-          child: Text(value),
+          alignment: Alignment.centerRight,
+          child: _StateDropdownItem(value: value),
         );
       }).toList());
 
       return toReturn;
     }
 
+    String stateDropdownValue = KanbanCardProvider.cardState!.name;
     return SingleChildScrollView(
       child: SizedBox(
         width: 600,
@@ -190,16 +202,15 @@ class _KanbanFormState extends State<_KanbanForm> {
                 style: const TextStyle(color: Colors.black, fontSize: 14),
                 controller: titleController,
                 decoration: CustomInputDecoration(
-                    hintText: 'Descripción tarea.',
-                    labelText:
-                        'Ingresa una breve descripción de la tarea (max 100).',
-                    controller: titleController,
-                    onTap: (){
-                      titleController.text='';
-                      KanbanCardProvider.title='';
-                    },
-                    
-                    ),
+                  hintText: 'Descripción tarea.',
+                  labelText:
+                      'Ingresa una breve descripción de la tarea (max 100).',
+                  controller: titleController,
+                  onTap: () {
+                    titleController.text = '';
+                    KanbanCardProvider.title = '';
+                  },
+                ),
                 onChanged: (value) {
                   KanbanCardProvider.title = value;
                 },
@@ -216,13 +227,14 @@ class _KanbanFormState extends State<_KanbanForm> {
                 style: const TextStyle(color: Colors.black, fontSize: 14),
                 controller: descriptionController,
                 decoration: CustomInputDecoration(
-                    hintText: 'Comentarios.',
-                    labelText: 'Añade comentarios sobre la tarea.',
-                    controller: descriptionController,
-                                        onTap: (){
-                      descriptionController.text='';
-                      KanbanCardProvider.description='';
-                    },),
+                  hintText: 'Comentarios.',
+                  labelText: 'Añade comentarios sobre la tarea.',
+                  controller: descriptionController,
+                  onTap: () {
+                    descriptionController.text = '';
+                    KanbanCardProvider.description = '';
+                  },
+                ),
                 onChanged: (value) {
                   KanbanCardProvider.description = value;
                 },
@@ -253,27 +265,34 @@ class _KanbanFormState extends State<_KanbanForm> {
                         const Text('Categoría:',
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         const SizedBox(width: 20),
-                        DropdownButton<String>(
-                          value: (stateDropdownValue == '')
-                              ? null
-                              : stateDropdownValue,
-                          icon: const Icon(Icons.arrow_downward),
-                          iconSize: 20,
-                          elevation: 16,
-                          // style: const TextStyle(color: Colors.deepPurple),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.deepPurpleAccent,
+                        Container(
+                          width: 180,
+                          child: DropdownButton<String>(
+                            value: stateDropdownValue,
+                            icon: const Icon(Icons.arrow_downward),
+                            iconSize: 20,
+                            elevation: 16,
+                             alignment: Alignment.centerRight,
+
+                            style: TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                color: Colors.black),
+
+                            // style: const TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.deepPurpleAccent,
+                            ),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                stateDropdownValue = newValue!;
+                                KanbanCardProvider.cardState = boardProvider
+                                    .getCardStateFromName(newValue);
+                                KanbanCardProvider.stateDate = DateTime.now();
+                              });
+                            },
+                            items: buildStateDropdown(),
                           ),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              stateDropdownValue = newValue!;
-                              KanbanCardProvider.cardState =
-                                  boardProvider.getCardStateFromName(newValue);
-                              KanbanCardProvider.stateDate = DateTime.now();
-                            });
-                          },
-                          items: buildStateDropdown(),
                         ),
                       ],
                     ),
@@ -509,6 +528,27 @@ class _KanbanFormState extends State<_KanbanForm> {
         KanbanCardProvider.expirationDate = selected;
       });
     }
+  }
+}
+
+class _StateDropdownItem extends StatelessWidget {
+  final String value;
+  const _StateDropdownItem({
+    Key? key,
+    required this.value,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    String text = value;
+
+    if (value.length > 20) {
+      text = value.substring(0, 20);
+      text += '...';
+    }
+    print(text);
+
+    return Text(text,textAlign: TextAlign.right);
   }
 }
 

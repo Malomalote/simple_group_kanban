@@ -67,6 +67,19 @@ class RolQueries {
     db.dispose();
     return _rowToRol(result.first);
   }
+  static Rol? getRolFromName(String name) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+
+    sqlite.ResultSet result = db.select('select * from rol where name="$name"');
+
+    for (var r in result) {
+      db.dispose();
+      return _rowToRol(r);
+    }
+
+    db.dispose();
+    return null;
+  }
 
   static Rol _rowToRol(sqlite.Row r) {
     String rolId = r['rol_id'];
