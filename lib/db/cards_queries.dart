@@ -91,7 +91,7 @@ class CardsQueries {
       final int cardColor = Utils.colorToInt(card.cardColor);
       final int position = card.position;
 
-      final query = 
+      final query =
           'UPDATE kanban_card SET creator = "$creator", creation_date="$creationDate", user_asigned = "$userAsigned",team_asigned = "$teamAsigned", card_state = "$cardState", state_date = "$stateDate", priority = "$priority", title = "$title", description = "$description",expiration_date = "$expirationDate", private = "$private", card_color = "$cardColor",position = "$position" WHERE card_id="${card.cardId}"';
       db.execute(query);
       db.dispose();
@@ -163,7 +163,6 @@ class CardsQueries {
     return kanbanCards;
   }
 
-
   static void updateColor(String id, Color color) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
     String query =
@@ -179,31 +178,30 @@ class CardsQueries {
     db.execute(query);
     db.dispose();
   }
+
   static void updateState(String id, String idNewState) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
     String query =
         'update kanban_card set card_state="$idNewState" where card_id="$id"';
     db.execute(query);
-    
+
     db.dispose();
   }
-  static void deleteCard(String id){
-        sqlite.Database db = sqlite.sqlite3.open(finalPath);
-    String query =
-        'DELETE FROM kanban_card where card_id="$id"';
-    db.execute(query);
-    db.dispose();
-  }
-  static void deleteCardsFromUser(String id){
-        sqlite.Database db = sqlite.sqlite3.open(finalPath);
-    String query =
-        'DELETE FROM kanban_card where user_asigned="$id"';
+
+  static void deleteCard(String id) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query = 'DELETE FROM kanban_card where card_id="$id"';
     db.execute(query);
     db.dispose();
   }
 
+  static void deleteCardsFromUser(String id) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    String query = 'DELETE FROM kanban_card where user_asigned="$id"';
+    db.execute(query);
+    db.dispose();
+  }
 
-  
   static KanbanCard? _rowToKanbanCard(sqlite.Row r) {
     String cardId = r['card_id'];
 

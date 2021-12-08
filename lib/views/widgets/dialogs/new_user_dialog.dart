@@ -138,16 +138,7 @@ class _NewUserFormState extends State<_NewUserForm> {
                 onChanged: (value) {
                   UsersProvider.name = value;
                 },
-                validator: (_) {
-                  if (listUsersName
-                      .contains(nameController.text.trim().toLowerCase())) {
-                    return 'El nombre de usuario ya existe';
-                  }
-                  if (nameController.text.isEmpty ||
-                      nameController.text.length > 40) {
-                    return 'Debe contener entre 1 y 40 caracteres';
-                  }
-                },
+
               ),
               DropdownButton<String>(
                 value: rolDropDownValue,

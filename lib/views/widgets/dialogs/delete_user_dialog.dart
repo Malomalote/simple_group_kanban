@@ -25,7 +25,7 @@ class DeleteUserDialog extends StatelessWidget {
           onPressed: () {
             if (UsersProvider.userGlobalKey.currentState!.validate() &&
                 UsersProvider.userId != null &&
-                UsersProvider.userId!.isNotEmpty ) {
+                UsersProvider.userId!.isNotEmpty) {
               showDialog(
                   context: context,
                   builder: (BuildContext context) => const _DeleteUserDialog());
@@ -48,13 +48,10 @@ class _DeleteUserForm extends StatefulWidget {
 }
 
 class _DeleteUserFormState extends State<_DeleteUserForm> {
-
-
   String systemNameDropDownValue = '';
-  String userName='';
-  String userRol='';
-  bool showData=false;
-
+  String userName = '';
+  String userRol = '';
+  bool showData = false;
 
   @override
   Widget build(BuildContext context) {
@@ -69,52 +66,58 @@ class _DeleteUserFormState extends State<_DeleteUserForm> {
           child: Column(
             children: [
               DropdownButton<String>(
-                  value: systemNameDropDownValue,
-                  icon: const Icon(Icons.arrow_downward),
-                  iconSize: 20,
-                  elevation: 16,
-                  underline:
-                      Container(height: 1, color: Colors.deepPurpleAccent),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      systemNameDropDownValue = newValue!;
-                      if (newValue != '') {
-                        UsersProvider.initUserProvider(boardProvider.listUsers
-                            .firstWhere(
-                                (element) => element.systemName == newValue));
-                       userName=UsersProvider.name!;
-                       userRol=UsersProvider.rol!.name;
-                        showData=true;
-                      } else {
-                       userName='';
-                       userRol='';
-                       showData=false;
-                      }
-                    });
-                  },
-                  items: [
-                    DropdownMenuItem(value: '', child: Text('')),
-                    ...boardProvider.listUsers
-                        .map((e) => e.systemName)
-                        .map<DropdownMenuItem<String>>((value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
+                value: systemNameDropDownValue,
+                icon: const Icon(Icons.arrow_downward),
+                iconSize: 20,
+                elevation: 16,
+                underline: Container(height: 1, color: Colors.deepPurpleAccent),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    systemNameDropDownValue = newValue!;
+                    if (newValue != '') {
+                      UsersProvider.initUserProvider(boardProvider.listUsers
+                          .firstWhere(
+                              (element) => element.systemName == newValue));
+                      userName = UsersProvider.name!;
+                      userRol = UsersProvider.rol!.name;
+                      showData = true;
+                    } else {
+                      userName = '';
+                      userRol = '';
+                      showData = false;
+                    }
+                  });
+                },
+                items: [
+                  const DropdownMenuItem(value: '', child: Text('')),
+                  ...boardProvider.listUsers
+                      .map((e) => e.systemName)
+                      .map<DropdownMenuItem<String>>((value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ],
+              ),
+              if (showData)
+                Column(
+                  children: [
+                    const Text('Nombre de usuario',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(userName),
+                    const Text('Perfil de usuario:',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(userRol),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Si borra este usuario se borrarán las tareas que tenga asignadas.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.bold),
+                    ),
                   ],
-                  ),
-                  if (showData) Column(
-                    children: [
-                      Text('Nombre de usuario',style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(userName),
-                      Text('Perfil de usuario:',style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(userRol),
-                      SizedBox(height: 10),
-                      Text('Si borra este usuario se borrarán las tareas que tenga asignadas.',textAlign : TextAlign.center, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),),
-                    ],
-                  ),
-
+                ),
             ],
           ),
         ),
@@ -126,45 +129,65 @@ class _DeleteUserFormState extends State<_DeleteUserForm> {
 //TODO: Falta adaptar esto
 class _DeleteUserDialog extends StatelessWidget {
   const _DeleteUserDialog({Key? key}) : super(key: key);
-  
 
   @override
   Widget build(BuildContext context) {
     final boardProvider = Provider.of<BoardProvider>(context, listen: false);
-    bool canDelete=(boardProvider.listUsers.where((element) => element.rol.name=='Administrador').toList().length>1);
+    bool canDelete = (boardProvider.listUsers
+            .where((element) => element.rol.name == 'Administrador')
+            .toList()
+            .length >
+        1);
     return Center(
       child: SingleChildScrollView(
         child: AlertDialog(
           title: const CustomAlertTitle(title: 'Borrar Usuario '),
           content: Column(
             children: [
-
-              (canDelete)?
-              Column(
-                children: [
-                                const Text('Se va a borrar el Usuario:',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Text(UsersProvider.name!),
-              const Text('Usuario para autenticación:',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Text(UsersProvider.systemName!),
-              const Text('Perfil:',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Text(UsersProvider.rol!.name),
-                     SizedBox(height: 10),
-                      Text('Recuerde que al borrar el usuario se eliminan las tareas que tenga asignadas.',textAlign: TextAlign.center, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),),
-                                     Text('¿Está seguro?',textAlign: TextAlign.center, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),),
-                ],
-              ): Column(
-                children: [
-                  Text(UsersProvider.name!),
-                     Text('No puede borrarse porque el sistema debe tener al menos un Administrador',textAlign: TextAlign.center, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),),
-                     Text('Antes de borrarlo debe asignar el perfil Administrador a otro usuario',textAlign: TextAlign.center, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),),
-                ],
-              )
-              
-
-
+              (canDelete)
+                  ? Column(
+                      children: [
+                        const Text('Se va a borrar el Usuario:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(UsersProvider.name!),
+                        const Text('Usuario para autenticación:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(UsersProvider.systemName!),
+                        const Text('Perfil:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(UsersProvider.rol!.name),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Recuerde que al borrar el usuario se eliminan las tareas que tenga asignadas.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold),
+                        ),
+                        const Text(
+                          '¿Está seguro?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        Text(UsersProvider.name!),
+                        const Text(
+                          'No puede borrarse porque el sistema debe tener al menos un Administrador',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold),
+                        ),
+                        const Text(
+                          'Antes de borrarlo debe asignar el perfil Administrador a otro usuario',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    )
             ],
           ),
           actions: [
@@ -174,19 +197,18 @@ class _DeleteUserDialog extends StatelessWidget {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold)),
             ),
-           if (canDelete)
-           TextButton(
-              child: const Text('OK',
-              
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold)),
-              onPressed: () {
-                boardProvider.deleteUser(UsersProvider.getUser());
-                Navigator.of(context)
-                  ..pop()
-                  ..pop();
-              },
-            ),
+            if (canDelete)
+              TextButton(
+                child: const Text('OK',
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  boardProvider.deleteUser(UsersProvider.getUser());
+                  Navigator.of(context)
+                    ..pop()
+                    ..pop();
+                },
+              ),
           ],
         ),
       ),

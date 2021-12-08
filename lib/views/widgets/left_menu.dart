@@ -43,13 +43,14 @@ class LeftMenu extends StatelessWidget {
                   builder: (BuildContext context) => const StateCardDialog());
             },
           ),
-          Divider(),
+          const Divider(),
           _MenuItem(
             icon: FontAwesomeIcons.question,
             text: 'About...',
             font: 'FaIcon',
             onPressed: () {
-              showDialog(context: context, builder: (_) => const CustomAboutDialog());
+              showDialog(
+                  context: context, builder: (_) => const CustomAboutDialog());
             },
           ),
         ],
@@ -63,65 +64,61 @@ class _AdminMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          _MenuItem(
-            icon: Icons.person_add,
-            text: 'Añadir Usuario',
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => const NewUserDialog(),
-              );
-            },
-          ),
-          _MenuItem(
+    return Column(
+      children: [
+        _MenuItem(
+          icon: Icons.person_add,
+          text: 'Añadir Usuario',
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => const NewUserDialog(),
+            );
+          },
+        ),
+        _MenuItem(
             icon: Icons.manage_accounts,
             text: 'Editar Usuario',
             onPressed: () {
-                            showDialog(
+              showDialog(
                 context: context,
                 builder: (BuildContext context) => const UpdateUserDialog(),
               );
-            }
-            
-  
-          ),
-          _MenuItem(
-            icon: Icons.person_off,
-            text: 'Borrar Usuario',
-            onPressed: () {
-              showDialog(context: context, builder: (_) => const DeleteUserDialog());
-            },
-          ),
-          Divider(),
-          // _MenuItem(
-          //   icon: Icons.group_add,
-          //   text: 'Añadir Equipo',
-          //   onPressed: () {
-          //     print('añadir equipo');
-          //   },
-          // ),
-          // _MenuItem(
-          //   icon: FontAwesomeIcons.usersCog,
-          //   font: 'FaIcon',
-          //   text: 'Editar Equipo',
-          //   onPressed: () {
-          //     print('editar equipo');
-          //   },
-          // ),
-          // _MenuItem(
-          //   icon: FontAwesomeIcons.usersSlash,
-          //   font: 'FaIcon',
-          //   text: 'Borrar Equipo',
-          //   onPressed: () {
-          //     print('borrar equipo');
-          //   },
-          // ),
-          // Divider(),
-        ],
-      ),
+            }),
+        _MenuItem(
+          icon: Icons.person_off,
+          text: 'Borrar Usuario',
+          onPressed: () {
+            showDialog(
+                context: context, builder: (_) => const DeleteUserDialog());
+          },
+        ),
+        const Divider(),
+        // _MenuItem(
+        //   icon: Icons.group_add,
+        //   text: 'Añadir Equipo',
+        //   onPressed: () {
+        //     print('añadir equipo');
+        //   },
+        // ),
+        // _MenuItem(
+        //   icon: FontAwesomeIcons.usersCog,
+        //   font: 'FaIcon',
+        //   text: 'Editar Equipo',
+        //   onPressed: () {
+        //     print('editar equipo');
+        //   },
+        // ),
+        // _MenuItem(
+        //   icon: FontAwesomeIcons.usersSlash,
+        //   font: 'FaIcon',
+        //   text: 'Borrar Equipo',
+        //   onPressed: () {
+        //     print('borrar equipo');
+        //   },
+        // ),
+        // Divider(),
+      ],
     );
   }
 }

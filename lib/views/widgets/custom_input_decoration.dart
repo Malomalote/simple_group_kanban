@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-InputDecoration CustomInputDecoration(
+InputDecoration customInputDecoration(
     {required String hintText,
     required String labelText,
     required TextEditingController controller,
@@ -8,11 +8,11 @@ InputDecoration CustomInputDecoration(
   return InputDecoration(
       hintText: hintText,
       suffixIcon: GestureDetector(
-          child: const MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Icon(Icons.clear_rounded, color: Colors.grey, size: 14)),
-          onTap: onTap
-          ,),
+        child: const MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: Icon(Icons.clear_rounded, color: Colors.grey, size: 14)),
+        onTap: onTap,
+      ),
       labelText: labelText,
       hintStyle: const TextStyle(fontSize: 10));
 }

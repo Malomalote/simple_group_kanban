@@ -30,7 +30,7 @@ class UsersQueries {
     return -1;
   }
 
-    static void deleteUser(User user) {
+  static void deleteUser(User user) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
     String query = 'DELETE FROM user where user_id="${user.userId}"';
     db.execute(query);
@@ -81,6 +81,7 @@ class UsersQueries {
     db.dispose();
     return null;
   }
+
   static User? getUserFromName(String? name) {
     if (name == null) return null;
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
@@ -97,9 +98,10 @@ class UsersQueries {
     return null;
   }
 
-  static void updateUser(User user){
+  static void updateUser(User user) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
-    String query = 'update user set name="${user.name}", system_name="${user.systemName}", rol="${user.rol.rolId}" where user_id="${user.userId}"';
+    String query =
+        'update user set name="${user.name}", system_name="${user.systemName}", rol="${user.rol.rolId}" where user_id="${user.userId}"';
     db.execute(query);
     db.dispose();
   }

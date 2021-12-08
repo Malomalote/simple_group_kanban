@@ -107,7 +107,7 @@ class _UpdateUserFormState extends State<_UpdateUserForm> {
                     });
                   },
                   items: [
-                    DropdownMenuItem(value: '', child: Text('')),
+                    const DropdownMenuItem(value: '', child: Text('')),
                     ...boardProvider.listUsers
                         .map((e) => e.systemName)
                         .map<DropdownMenuItem<String>>((value) {
@@ -193,7 +193,6 @@ class _UpdateUserFormState extends State<_UpdateUserForm> {
   }
 }
 
-//TODO: Falta adaptar esto
 class _UpdateUserDialog extends StatelessWidget {
   const _UpdateUserDialog({Key? key}) : super(key: key);
 

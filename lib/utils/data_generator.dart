@@ -39,19 +39,20 @@ class DataGenerator {
   }
 
   void fillKanbanDb() {
-    KanbanDatabase.initDatabase();
+    
+    KanbanDatabase.initDatabase(systemName:'prueba', userName:'prueba');
 
     insertRol();
-    int numberOfTeams = 20;
+    int numberOfTeams = 5;
     insertTeam(numberOfTeams);
     insertPriority();
-    int numberOfCardState = 10;
+    int numberOfCardState = 5;
     insertCardState(numberOfCardState);
-    int numberOfUsers = 40;
+    int numberOfUsers = 10;
     insertUsers(numberOfUsers);
-    int numberOfUsersTeams = 40;
+    int numberOfUsersTeams = 10;
     insertUsersTeams(numberOfUsersTeams);
-    int numberOfCards = 100;
+    int numberOfCards = 20;
     insertCards(numberOfCards);
   }
 

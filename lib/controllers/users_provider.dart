@@ -10,18 +10,18 @@ class UsersProvider {
   static String? systemName;
   static String? name;
   static Rol? rol;
-  static bool isNewUser=true;
+  static bool isNewUser = true;
 
-  static void initUserProvider(User user){
-    userId=user.userId;
-    systemName=user.systemName;
-    name=user.name;
-    rol=user.rol;
-    isNewUser=false;
+  static void initUserProvider(User user) {
+    userId = user.userId;
+    systemName = user.systemName;
+    name = user.name;
+    rol = user.rol;
+    isNewUser = false;
   }
 
   static User getUser() {
-        final String? newId;
+    final String? newId;
     if (isNewUser) {
       Nuid nuid = Nuid.instance;
       newId = nuid.next();

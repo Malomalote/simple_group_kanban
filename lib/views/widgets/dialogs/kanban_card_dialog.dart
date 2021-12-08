@@ -13,7 +13,6 @@ import 'package:simple_kanban/models/priority.dart';
 import 'package:simple_kanban/utils/utils.dart';
 import 'package:simple_kanban/views/widgets/custom_alert_title.dart';
 import 'package:simple_kanban/views/widgets/custom_input_decoration.dart';
-import 'package:simple_kanban/views/widgets/kanban_card_widget.dart';
 
 class KanbanCardDialog extends StatelessWidget {
   final KanbanCard? kanbanCard;
@@ -31,13 +30,12 @@ class KanbanCardDialog extends StatelessWidget {
     final boardProvider = Provider.of<BoardProvider>(context);
     KanbanCardProvider.isNewKanbanCard = newCard;
 
-
     return AlertDialog(
       contentPadding: const EdgeInsets.all(8),
       buttonPadding: const EdgeInsets.all(1),
-            title: (newCard)
-          ? CustomAlertTitle(title: 'Añadir Tarea')
-          : CustomAlertTitle(title: 'Modificar Tarea'),
+      title: (newCard)
+          ? const CustomAlertTitle(title: 'Añadir Tarea')
+          : const CustomAlertTitle(title: 'Modificar Tarea'),
       backgroundColor: boardProvider.backgroundKanbanColor,
       content: _KanbanForm(
           kanbanCard: kanbanCard, cardStateDefault: cardStateDefault),
@@ -53,7 +51,7 @@ class KanbanCardDialog extends StatelessWidget {
                           _DeleteKanbanCardDialog(kanbanCard: kanbanCard));
                 },
                 child: Row(
-                  children: [
+                  children: const [
                     Icon(Icons.delete, color: Colors.red),
                     Text(
                       'Eliminar Tarea',
@@ -63,7 +61,7 @@ class KanbanCardDialog extends StatelessWidget {
                   ],
                 ),
               ),
-            Spacer(),
+            const Spacer(),
             TextButton(
               onPressed: () => Navigator.pop(context, 'Cancel'),
               child: const Text('Cancel',
@@ -80,7 +78,7 @@ class KanbanCardDialog extends StatelessWidget {
                   showDialog(
                       context: context,
                       builder: (BuildContext context) =>
-                          _ModifyKanbanCardDialog());
+                          const _ModifyKanbanCardDialog());
                 }
               },
               child: const Text('OK',
@@ -93,9 +91,6 @@ class KanbanCardDialog extends StatelessWidget {
     );
   }
 }
-
-
-
 
 class _KanbanForm extends StatefulWidget {
   final KanbanCard? kanbanCard;
@@ -164,6 +159,7 @@ class _KanbanFormState extends State<_KanbanForm> {
 
     if (KanbanCardProvider.isNewKanbanCard) {
       asignedUser = boardProvider.currentUser!.name;
+
       KanbanCardProvider.userAsigned = boardProvider.currentUser;
       KanbanCardProvider.creator = boardProvider.currentUser;
       KanbanCardProvider.priority = boardProvider.getDefaultPriority();
@@ -201,7 +197,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                 maxLines: null,
                 style: const TextStyle(color: Colors.black, fontSize: 14),
                 controller: titleController,
-                decoration: CustomInputDecoration(
+                decoration: customInputDecoration(
                   hintText: 'Descripción tarea.',
                   labelText:
                       'Ingresa una breve descripción de la tarea (max 100).',
@@ -226,7 +222,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                 maxLines: null,
                 style: const TextStyle(color: Colors.black, fontSize: 14),
                 controller: descriptionController,
-                decoration: CustomInputDecoration(
+                decoration: customInputDecoration(
                   hintText: 'Comentarios.',
                   labelText: 'Añade comentarios sobre la tarea.',
                   controller: descriptionController,
@@ -265,16 +261,16 @@ class _KanbanFormState extends State<_KanbanForm> {
                         const Text('Categoría:',
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         const SizedBox(width: 20),
-                        Container(
+                        SizedBox(
                           width: 180,
                           child: DropdownButton<String>(
                             value: stateDropdownValue,
                             icon: const Icon(Icons.arrow_downward),
                             iconSize: 20,
                             elevation: 16,
-                             alignment: Alignment.centerRight,
+                            alignment: Alignment.centerRight,
 
-                            style: TextStyle(
+                            style: const TextStyle(
                                 overflow: TextOverflow.ellipsis,
                                 color: Colors.black),
 
@@ -412,7 +408,6 @@ class _KanbanFormState extends State<_KanbanForm> {
                   const Text('Asignada a: ',
                       style:
                           TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                  //TODO: Falta tiene que poder elegirse
                   DropdownButton<String>(
                     value: (asignedUser == '')
                         ? boardProvider.currentUser!.name
@@ -437,7 +432,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: //Text(value),
-                        _StateDropdownItem(value: value),
+                            _StateDropdownItem(value: value),
                       );
                     }).toList(),
                   ),
@@ -451,10 +446,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                           TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
 
                   DropdownButton<String>(
-                    value: (asignedTeam !=
-                            null) //TODO: Falta igual se puede quitar esto
-                        ? asignedTeam
-                        : null,
+                    value: asignedTeam,
                     icon: const Icon(Icons.arrow_downward),
                     iconSize: 20,
                     elevation: 16,
@@ -477,7 +469,7 @@ class _KanbanFormState extends State<_KanbanForm> {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: //Text(value),
-                          _StateDropdownItem(value: value),
+                              _StateDropdownItem(value: value),
                         );
                       }).toList()
                     ],
@@ -548,9 +540,7 @@ class _StateDropdownItem extends StatelessWidget {
       text = value.substring(0, 20);
       text += '...';
     }
-    print(text);
-
-    return Text(text,textAlign: TextAlign.right);
+    return Text(text, textAlign: TextAlign.right);
   }
 }
 

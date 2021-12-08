@@ -73,6 +73,7 @@ class PrioritiesQueries {
     db.dispose();
     return null;
   }
+
   static Priority? getPriorityFromName(String name) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
 
@@ -88,11 +89,10 @@ class PrioritiesQueries {
     return null;
   }
 
-  static Priority? getDefaultPriority(){
-        sqlite.Database db = sqlite.sqlite3.open(finalPath);
+  static Priority? getDefaultPriority() {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
 
-    sqlite.ResultSet result =
-        db.select('select * from priority');
+    sqlite.ResultSet result = db.select('select * from priority');
 
     for (var r in result) {
       db.dispose();
@@ -110,5 +110,4 @@ class PrioritiesQueries {
 
     return Priority(priorityId: id, name: name, priorityColor: priorityColor);
   }
-
 }

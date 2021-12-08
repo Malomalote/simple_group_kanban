@@ -14,7 +14,11 @@ class CustomAlertTitle extends StatelessWidget {
         Text(title,
             style: const TextStyle(fontWeight: FontWeight.bold),
             textAlign: TextAlign.center),
-        const Divider(height: 10, thickness: 3,color: Colors.black38,),
+        const Divider(
+          height: 10,
+          thickness: 3,
+          color: Colors.black38,
+        ),
       ],
     );
   }

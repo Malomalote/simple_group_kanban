@@ -65,6 +65,7 @@ class TeamsQueries {
     db.dispose();
     return null;
   }
+
   static Team? getTeamFromName(String name) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
 

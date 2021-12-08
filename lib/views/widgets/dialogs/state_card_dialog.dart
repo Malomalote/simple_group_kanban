@@ -9,7 +9,6 @@ import 'package:simple_kanban/utils/extensions.dart';
 import 'package:simple_kanban/utils/utils.dart';
 import 'package:simple_kanban/views/widgets/custom_alert_title.dart';
 
-
 class StateCardDialog extends StatelessWidget {
   final CardState? cardState;
   const StateCardDialog({
@@ -22,9 +21,8 @@ class StateCardDialog extends StatelessWidget {
     if (cardState == null) CardStateProvider.newcardState = true;
     return AlertDialog(
       title: (cardState == null)
-          ? CustomAlertTitle(title: 'Añadir Categoría')
-          : CustomAlertTitle(title: 'Modificar Categoría'),
-        
+          ? const CustomAlertTitle(title: 'Añadir Categoría')
+          : const CustomAlertTitle(title: 'Modificar Categoría'),
       contentPadding: const EdgeInsets.all(8),
       buttonPadding: const EdgeInsets.all(15),
       content: _StateForm(cardState: cardState),
@@ -41,7 +39,7 @@ class StateCardDialog extends StatelessWidget {
                   },
                   child: const Text(
                     'Eliminar Categoría',
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: Colors.red, fontWeight: FontWeight.bold),
                   )),
             const Spacer(),
@@ -73,7 +71,6 @@ class StateCardDialog extends StatelessWidget {
     );
   }
 }
-
 
 class _StateForm extends StatefulWidget {
   final CardState? cardState;

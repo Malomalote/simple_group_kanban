@@ -10,7 +10,6 @@ class CardState {
     this.description,
     required this.position,
   });
-  
 
   CardState copyWith({
     String? stateId,

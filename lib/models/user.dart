@@ -6,5 +6,9 @@ class User {
   final Rol rol;
   final String systemName;
 
-  User({required this.userId, required this.name, required this.rol,required this.systemName});
+  User(
+      {required this.userId,
+      required this.name,
+      required this.rol,
+      required this.systemName});
 }

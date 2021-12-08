@@ -27,8 +27,10 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  bitsdojo_window: ^0.1.1+1
   collapsible_sidebar: ^2.0.1+2
   cupertino_icons: ^1.0.2
+  desktop_window: ^0.4.0
   flutter:
     sdk: flutter
   font_awesome_flutter: ^9.2.0

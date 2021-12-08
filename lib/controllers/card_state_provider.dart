@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
-class CardStateProvider{
+class CardStateProvider {
+  static GlobalKey<FormState> stateGlobalKey = GlobalKey<FormState>();
 
-  static GlobalKey<FormState> stateGlobalKey= GlobalKey<FormState>();
-
-  static String nameState='';
-  static String descriptionState='';
-  static bool cardStateFormValid=true;
-  static bool newcardState=false;
-
+  static String nameState = '';
+  static String descriptionState = '';
+  static bool cardStateFormValid = true;
+  static bool newcardState = false;
 }

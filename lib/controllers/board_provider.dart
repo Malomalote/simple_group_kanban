@@ -34,15 +34,30 @@ class BoardProvider with ChangeNotifier {
     listPriorities = PrioritiesQueries.getAllPriorities();
     listUsers = UsersQueries.getAllUsers();
     listTeams = TeamsQueries.getAllTeam();
-    listRol=RolQueries.getAllRol();
+    listRol = RolQueries.getAllRol();
     final username = Platform.environment['USERNAME'];
     currentUser = UsersQueries.getUserFromSystemName(username);
-    if (currentUser != null) {
+    //TODO: Falta volver a poner condicion sobre tipo de usuario para inicio
+       if (currentUser != null) {
       final rol = RolQueries.getRol(currentUser!.rol.rolId);
       currentUserRol = rol.name;
     } else {
-      currentUserRol=listRol[0].name;
-    }
+      currentUserRol = listRol[0].name;
+    } 
+
+    ///////////////////////////////////////////////////////////////
+    //     final username2='default';
+    //     currentUser = UsersQueries.getUserFromSystemName(username2);
+    //    if (currentUser != null) {
+    //   final rol = RolQueries.getRol(currentUser!.rol.rolId);
+    //   currentUserRol = rol.name;
+    // } else {
+    //   currentUserRol = listRol[0].name;
+    // } 
+  
+
+//////////////////////////////////
+
   }
 
   void updateCardPosition(KanbanCard kanbanCard, int newPosition) {
@@ -137,45 +152,46 @@ class BoardProvider with ChangeNotifier {
     return CardStateQueries.getCardsStateFromName(name);
   }
 
-  Priority? getPriorityFromName(String name){
+  Priority? getPriorityFromName(String name) {
     return PrioritiesQueries.getPriorityFromName(name);
   }
-  User? getUserFromName(String name){
+
+  User? getUserFromName(String name) {
     return UsersQueries.getUserFromName(name);
   }
-  Team? getTeamFromName(String name){
+
+  Team? getTeamFromName(String name) {
     return TeamsQueries.getTeamFromName(name);
   }
 
-  void addKanbanCard(KanbanCard kanbanCard){
+  void addKanbanCard(KanbanCard kanbanCard) {
     CardsQueries.insertKanbanCard(kanbanCard);
     notifyListeners();
   }
-  void updateKanbanCard(KanbanCard kanbanCard){
+
+  void updateKanbanCard(KanbanCard kanbanCard) {
     CardsQueries.updateKanbanCard(kanbanCard);
     notifyListeners();
   }
 
-  Rol getRolFromName(String name){
+  Rol getRolFromName(String name) {
     return RolQueries.getRolFromName(name);
-    
-
   }
-  void insertUser(User newUser){
+
+  void insertUser(User newUser) {
     UsersQueries.insertUser(newUser);
     notifyListeners();
   }
-  void updateUser(User newUser){
+
+  void updateUser(User newUser) {
     UsersQueries.updateUser(newUser);
     notifyListeners();
   }
-  void deleteUser(User newUser){
 
-
+  void deleteUser(User newUser) {
     CardsQueries.deleteCardsFromUser(newUser.userId);
     UsersQueries.deleteUser(newUser);
 
     notifyListeners();
   }
-  
 }
