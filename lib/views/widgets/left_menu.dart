@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'package:simple_kanban/controllers/board_provider.dart';
 import 'package:simple_kanban/controllers/menu_provider.dart';
+import 'package:simple_kanban/utils/utils.dart';
 import 'package:simple_kanban/views/widgets/dialogs/custom_about_dialog.dart';
 import 'package:simple_kanban/views/widgets/dialogs/delete_user_dialog.dart';
 import 'package:simple_kanban/views/widgets/dialogs/new_user_dialog.dart';
@@ -32,7 +33,7 @@ class LeftMenu extends StatelessWidget {
               menuProvider.switchMenu();
             },
           ),
-          if (boardProvider.currentUserRol == 'Administrador')
+          if (boardProvider.currentUserRol == UsersRol.admin)
             const _AdminMenu(),
           _MenuItem(
             icon: Icons.auto_awesome_motion,
@@ -94,30 +95,30 @@ class _AdminMenu extends StatelessWidget {
           },
         ),
         const Divider(),
-        // _MenuItem(
-        //   icon: Icons.group_add,
-        //   text: 'Añadir Equipo',
-        //   onPressed: () {
-        //     print('añadir equipo');
-        //   },
-        // ),
-        // _MenuItem(
-        //   icon: FontAwesomeIcons.usersCog,
-        //   font: 'FaIcon',
-        //   text: 'Editar Equipo',
-        //   onPressed: () {
-        //     print('editar equipo');
-        //   },
-        // ),
-        // _MenuItem(
-        //   icon: FontAwesomeIcons.usersSlash,
-        //   font: 'FaIcon',
-        //   text: 'Borrar Equipo',
-        //   onPressed: () {
-        //     print('borrar equipo');
-        //   },
-        // ),
-        // Divider(),
+        _MenuItem(
+          icon: Icons.group_add,
+          text: 'Añadir Equipo',
+          onPressed: () {
+            print('añadir equipo');
+          },
+        ),
+        _MenuItem(
+          icon: FontAwesomeIcons.usersCog,
+          font: 'FaIcon',
+          text: 'Editar Equipo',
+          onPressed: () {
+            print('editar equipo');
+          },
+        ),
+        _MenuItem(
+          icon: FontAwesomeIcons.usersSlash,
+          font: 'FaIcon',
+          text: 'Borrar Equipo',
+          onPressed: () {
+            print('borrar equipo');
+          },
+        ),
+        Divider(),
       ],
     );
   }

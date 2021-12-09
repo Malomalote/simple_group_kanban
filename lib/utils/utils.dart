@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nuid/nuid.dart';
 
 enum CardDirection { izquierda, derecha }
+enum UsersRol{user, departmentBoss, boss, admin}
 
 class Utils {
   static bool isDNI(String dni) {

@@ -40,7 +40,7 @@ class DataGenerator {
 
   void fillKanbanDb() {
     
-    KanbanDatabase.initDatabase(systemName:'prueba', userName:'prueba');
+    KanbanDatabase.initSqlite3Database(systemName:'prueba', userName:'prueba');
 
     insertRol();
     int numberOfTeams = 5;

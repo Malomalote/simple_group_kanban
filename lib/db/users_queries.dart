@@ -66,28 +66,13 @@ class UsersQueries {
     return null;
   }
 
+
   static User? getUserFromSystemName(String? systemName) {
     if (systemName == null) return null;
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
 
     sqlite.ResultSet result =
         db.select('select * from user where system_name="$systemName"');
-
-    for (var r in result) {
-      db.dispose();
-      return _rowToUser(r);
-    }
-
-    db.dispose();
-    return null;
-  }
-
-  static User? getUserFromName(String? name) {
-    if (name == null) return null;
-    sqlite.Database db = sqlite.sqlite3.open(finalPath);
-
-    sqlite.ResultSet result =
-        db.select('select * from user where name="$name"');
 
     for (var r in result) {
       db.dispose();

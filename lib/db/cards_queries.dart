@@ -163,6 +163,31 @@ class CardsQueries {
     return kanbanCards;
   }
 
+  static List<List<KanbanCard>> getKanbanCardsFromListState(
+      List<String> listState) {
+    sqlite.Database db = sqlite.sqlite3.open(finalPath);
+    List<List<KanbanCard>> toReturn = [];
+
+    for (var l in listState) {
+      String query =
+          'select * from kanban_card where card_state="$l" order by position';
+      sqlite.ResultSet result = db.select(query);
+
+      List<KanbanCard> kanbanCards = [];
+
+      for (var r in result) {
+        KanbanCard? newCard = _rowToKanbanCard(r);
+        if (newCard != null) {
+          kanbanCards.add(newCard);
+        }
+      }
+      toReturn.add(kanbanCards);
+    }
+
+    db.dispose();
+    return toReturn;
+  }
+
   static void updateColor(String id, Color color) {
     sqlite.Database db = sqlite.sqlite3.open(finalPath);
     String query =

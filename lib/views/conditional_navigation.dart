@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:simple_kanban/db/handling_database.dart';
 import 'package:simple_kanban/views/home_view.dart';
 import 'package:simple_kanban/views/instalation_view.dart';
+import 'package:simple_kanban/views/widgets/user_error.dart';
 
 class ConditionalNavigation extends StatefulWidget {
   const ConditionalNavigation({Key? key}) : super(key: key);
@@ -15,7 +17,6 @@ class ConditionalNavigation extends StatefulWidget {
 class _ConditionalNavigationState extends State<ConditionalNavigation> {
   @override
   void initState() {
-    
     super.initState();
     startTimer();
   }
@@ -23,7 +24,7 @@ class _ConditionalNavigationState extends State<ConditionalNavigation> {
   void startTimer() {
     // Timer(Duration(milliseconds: 200), () {
     Timer(Duration.zero, () {
-       conditionalNavigation(); //It will redirect  after 3 seconds
+      conditionalNavigation(); //It will redirect  after 3 seconds
     });
   }
 
@@ -32,11 +33,18 @@ class _ConditionalNavigationState extends State<ConditionalNavigation> {
         Directory.current.path + Platform.pathSeparator + 'kanban.db';
     final fileExists = File(finalPath).existsSync();
     if (fileExists) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const HomeView()));
+      final username = Platform.environment['USERNAME'];
+
+      if (HandlingDatabase.getUserFromSsytemName(username) == null) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const UserError()));
+      } else {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const HomeView()));
+      }
     } else {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const InstalationView()));
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => const InstalationView()));
     }
   }
 
@@ -47,7 +55,11 @@ class _ConditionalNavigationState extends State<ConditionalNavigation> {
       child: const Center(
           child: Text(
         'KanbanCard v.01',
-        style: TextStyle(fontSize: 34, color: Colors.black, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic), 
+        style: TextStyle(
+            fontSize: 34,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontStyle: FontStyle.italic),
       )),
     );
   }

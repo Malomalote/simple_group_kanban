@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:simple_kanban/db/card_state_queries.dart';
 import 'package:simple_kanban/db/cards_queries.dart';
+import 'package:simple_kanban/db/handling_database.dart';
 import 'package:simple_kanban/db/priorities_queries.dart';
 import 'package:simple_kanban/db/rol_queries.dart';
 import 'package:simple_kanban/db/teams_queries.dart';
@@ -13,51 +14,35 @@ import 'package:simple_kanban/models/priority.dart';
 import 'package:simple_kanban/models/rol.dart';
 import 'package:simple_kanban/models/team.dart';
 import 'package:simple_kanban/models/user.dart';
+import 'package:simple_kanban/utils/utils.dart';
 
 class BoardProvider with ChangeNotifier {
   User? currentUser;
-  late String currentUserRol;
+  late UsersRol currentUserRol;
   List<CardState> listCardState = [];
-  late List<Priority> listPriorities;
-  late List<User> listUsers;
-  late List<Team> listTeams;
-  late List<Rol> listRol;
+  List<Priority> listPriorities = [];
+  List<User> listUsers = [];
+  List<Team> listTeams = [];
+  List<Rol> listRol = [];
   List<List<KanbanCard>> listKanbanCard = [];
 
-  Future<void> initBoard() async {
-    listCardState = [];
-    listKanbanCard = [];
-    listCardState = CardStateQueries.getAllCardsState(ordered: true);
-    for (var l in listCardState) {
-      listKanbanCard.add(CardsQueries.getKanbanCardsFromState(l.stateId, true));
-    }
-    listPriorities = PrioritiesQueries.getAllPriorities();
-    listUsers = UsersQueries.getAllUsers();
-    listTeams = TeamsQueries.getAllTeam();
-    listRol = RolQueries.getAllRol();
+  initBoard() {
     final username = Platform.environment['USERNAME'];
-    currentUser = UsersQueries.getUserFromSystemName(username);
-    //TODO: Falta volver a poner condicion sobre tipo de usuario para inicio
-       if (currentUser != null) {
-      final rol = RolQueries.getRol(currentUser!.rol.rolId);
-      currentUserRol = rol.name;
-    } else {
-      currentUserRol = listRol[0].name;
-    } 
-
-    ///////////////////////////////////////////////////////////////
-    //     final username2='default';
-    //     currentUser = UsersQueries.getUserFromSystemName(username2);
-    //    if (currentUser != null) {
-    //   final rol = RolQueries.getRol(currentUser!.rol.rolId);
-    //   currentUserRol = rol.name;
-    // } else {
-    //   currentUserRol = listRol[0].name;
-    // } 
   
+    currentUser = HandlingDatabase.getUserFromSsytemName(username);
 
-//////////////////////////////////
+    if (currentUser != null) {
+      final rol = HandlingDatabase.getRol(currentUser!.rol.rolId);
+      currentUserRol = UsersRol.values[int.parse(rol.rolId)];
+      listCardState = HandlingDatabase.getStatesFromUser(currentUser!);
+      listKanbanCard =
+          HandlingDatabase.getKanbanCardsFromListState(listCardState);
 
+      listPriorities = HandlingDatabase.getAllPriorities();
+      listUsers =HandlingDatabase.getAllUsers();
+      listTeams = HandlingDatabase.getAllTeam();
+      listRol = HandlingDatabase.getAllRol();
+    } 
   }
 
   void updateCardPosition(KanbanCard kanbanCard, int newPosition) {
@@ -157,7 +142,7 @@ class BoardProvider with ChangeNotifier {
   }
 
   User? getUserFromName(String name) {
-    return UsersQueries.getUserFromName(name);
+    return UsersQueries.getUserFromSystemName(name);
   }
 
   Team? getTeamFromName(String name) {

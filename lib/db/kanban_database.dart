@@ -1,15 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:simple_kanban/db/card_state_queries.dart';
-import 'package:simple_kanban/db/cards_queries.dart';
-import 'package:simple_kanban/db/priorities_queries.dart';
-import 'package:simple_kanban/db/rol_queries.dart';
-import 'package:simple_kanban/db/users_queries.dart';
+
+import 'package:simple_kanban/db/handling_database.dart';
 import 'package:simple_kanban/models/card_state.dart';
 import 'package:simple_kanban/models/kanban_card.dart';
 import 'package:simple_kanban/models/priority.dart';
 import 'package:simple_kanban/models/rol.dart';
+import 'package:simple_kanban/models/team.dart';
 import 'package:simple_kanban/models/user.dart';
 import 'package:simple_kanban/utils/utils.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -18,7 +16,7 @@ class KanbanDatabase {
   static final String finalPath =
       Directory.current.path + Platform.pathSeparator + 'kanban.db';
 
-  static void initDatabase({required String systemName,required String userName}) {
+  static void initSqlite3Database({required String systemName,required String userName}) {
     if (!File(finalPath).existsSync()) {
       Database db = sqlite3.open(finalPath);
       db.execute('''
@@ -99,69 +97,74 @@ class KanbanDatabase {
      ''');
 
       Rol userRol = Rol(
-          rolId: '1',
+          rolId: '0',
           name: 'Usuario',
           description:
               'Usuario sin privilegios, puede crear tareas, editar las de su correspondiente grupo y marcar como finalizada');
-      RolQueries.insertRol(userRol);
+      HandlingDatabase.insertRol(userRol);
 
-      Rol sectionBossRol = Rol(
-          rolId: '2',
-          name: 'Jefe de sección',
+      Rol departmentBossRol = Rol(
+          rolId: '1',
+          name: 'Jefe de departamento',
           description:
-              'Usuario con ciertos privilegios, puede cambiar tareas a una sección distinta a aquellas a las que pertenece.');
-      RolQueries.insertRol(sectionBossRol);
+              'Usuario con ciertos privilegios, puede cambiar tareas a un departamento distinto a aquellos a los que pertenece.');
+      HandlingDatabase.insertRol(departmentBossRol);
       Rol bossRol = Rol(
-          rolId: '3',
+          rolId: '2',
           name: 'Jefe',
           description:
               'Usuario con privilegios avanzados, puede añadir secciones nuevas, añadir tareas en todas las secciones, etc...');
-      RolQueries.insertRol(bossRol);
+      HandlingDatabase.insertRol(bossRol);
       Rol adminRol = Rol(
-          rolId: '4',
+          rolId: '3',
           name: 'Administrador',
           description: 'Usuario con todos los privilegios.');
-      RolQueries.insertRol(adminRol);
+      HandlingDatabase.insertRol(adminRol);
 
       
       User adminUser= User(userId: '0', name: userName, rol: adminRol, systemName: systemName);
-      UsersQueries.insertUser(adminUser);
+      HandlingDatabase.insertUser(adminUser);
+
+      Team adminTeam=Team(teamId: '0', name: 'Administradores', description:'Grupo de administradores, tienen acceso a todas las funcionalidades de la aplicación');
+      HandlingDatabase.insertTeam(adminTeam);
+
+      HandlingDatabase.insertUserTeam(adminUser, adminTeam);
 
       CardState cardStatePending = CardState(
           stateId: '0',
           name: 'Pendiente',
           description: 'Incluir en esta columna las tareas pendientes.',
           position: 0);
-      CardStateQueries.insertCardState(cardStatePending);
+      HandlingDatabase.insertCardState(cardStatePending);
       CardState cardStateProcessing = CardState(
           stateId: '1',
           name: 'En ejecución',
           description:
               'En esta columna se incluyen las tareas que están en proceso.',
           position: 1);
-      CardStateQueries.insertCardState(cardStateProcessing);
+      HandlingDatabase.insertCardState(cardStateProcessing);
       CardState cardStateEnd = CardState(
           stateId: '2',
           name: 'Finalizada',
           description: 'Las tareas realizadas se sitúan en esta columna.',
           position: 2);
-      CardStateQueries.insertCardState(cardStateEnd);
+      HandlingDatabase.insertCardState(cardStateEnd);
 
       Priority priorityLow =
           Priority(priorityId: '0', name: 'Baja', priorityColor: Colors.green);
-      PrioritiesQueries.insertPriority(priorityLow);
+      HandlingDatabase.insertPriority(priorityLow);
       Priority priorityMedium = Priority(
           priorityId: '1', name: 'Media', priorityColor: Colors.orange);
-      PrioritiesQueries.insertPriority(priorityMedium);
+      HandlingDatabase.insertPriority(priorityMedium);
       Priority priorityHigh =
           Priority(priorityId: '2', name: 'Alta', priorityColor: Colors.red);
-      PrioritiesQueries.insertPriority(priorityHigh);
+      HandlingDatabase.insertPriority(priorityHigh);
       KanbanCard kanbanCardPending =KanbanCard(cardId: '0', creator: adminUser, creationDate: DateTime.now(), userAsigned: adminUser, cardState: cardStatePending, stateDate: DateTime.now(), priority: priorityMedium, title: 'Tarea pendiente de realizar.', private: 'false', cardColor: kanbanColors[5], position: 0,description: 'Tarea de ejemplo');
-      CardsQueries.insertKanbanCard(kanbanCardPending);
+      HandlingDatabase.insertKanbanCard(kanbanCardPending);
       KanbanCard kanbanCardProcessing =KanbanCard(cardId: '1', creator: adminUser, creationDate: DateTime.now(), userAsigned: adminUser, cardState: cardStateProcessing, stateDate: DateTime.now(), priority: priorityHigh, title: 'Tarea en proceso. Ya mismo estará terminada.', private: 'false', cardColor: kanbanColors[3], position: 0,description: 'Tarea de ejemplo');
-      CardsQueries.insertKanbanCard(kanbanCardProcessing);
+      HandlingDatabase.insertKanbanCard(kanbanCardProcessing);
       KanbanCard kanbanCardEnd =KanbanCard(cardId: '2', creator: adminUser, creationDate: DateTime.now(), userAsigned: adminUser, cardState: cardStateEnd, stateDate: DateTime.now(), priority: priorityLow, title: 'Tarea finalizada.', private: 'false', cardColor: kanbanColors[0], position: 0,description: 'Tarea de ejemplo');
-      CardsQueries.insertKanbanCard(kanbanCardEnd);
+      HandlingDatabase.insertKanbanCard(kanbanCardEnd);
 
 
 
